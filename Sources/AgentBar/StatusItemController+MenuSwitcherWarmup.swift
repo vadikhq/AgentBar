@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 /// Pre-builds the merged switcher's sibling tab content shortly after the menu
 /// opens (and after each open-menu rebuild), so switching tabs attaches fully

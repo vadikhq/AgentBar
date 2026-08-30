@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import CoreTransferable
 import SwiftUI
 import UniformTypeIdentifiers

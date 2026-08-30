@@ -1,5 +1,5 @@
-import CloudKit
 import AgentBarCore
+import CloudKit
 import Foundation
 
 struct CloudSyncPersistence: Sendable {

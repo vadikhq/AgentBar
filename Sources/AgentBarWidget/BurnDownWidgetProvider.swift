@@ -1,5 +1,5 @@
-import AppIntents
 import AgentBarCore
+import AppIntents
 import WidgetKit
 
 /// Provider-specific by design: AppIntents requires compile-time enum cases and display representations;

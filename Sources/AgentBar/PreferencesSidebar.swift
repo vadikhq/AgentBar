@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import SwiftUI
 
 /// System Settings-style sidebar: fixed app panes on top, one row per provider below.

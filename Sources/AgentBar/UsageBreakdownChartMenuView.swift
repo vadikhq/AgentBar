@@ -1,5 +1,5 @@
-import Charts
 import AgentBarCore
+import Charts
 import SwiftUI
 
 @MainActor

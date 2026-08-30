@@ -1,5 +1,5 @@
-import AppIntents
 import AgentBarCore
+import AppIntents
 import SwiftUI
 import WidgetKit
 

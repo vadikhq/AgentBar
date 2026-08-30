@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 /// AgentBar's preferences live in ``SettingsWindowController``. The SwiftUI `Settings` scene is an empty
 /// placeholder that only carries the app-menu command group, and because it is the app's only scene macOS

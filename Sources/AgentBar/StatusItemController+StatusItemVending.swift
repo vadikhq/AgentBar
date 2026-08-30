@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 extension StatusItemController {
     /// Lazily retrieves or creates a status item for the given provider.

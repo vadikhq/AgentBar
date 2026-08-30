@@ -1,5 +1,5 @@
-import CloudKit
 import AgentBarCore
+import CloudKit
 import Foundation
 import Observation
 import Security

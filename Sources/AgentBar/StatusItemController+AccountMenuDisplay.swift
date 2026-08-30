@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 enum ClaudeSwapMenuPrecedence {
     static func prefersClaudeSwap(

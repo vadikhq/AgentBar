@@ -1,6 +1,6 @@
+import AgentBarCore
 import AppKit
 import Charts
-import AgentBarCore
 import SwiftUI
 import UniformTypeIdentifiers
 

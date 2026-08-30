@@ -1,6 +1,6 @@
 #if canImport(JavaScriptCore)
-import AppKit
 import AgentBarCore
+import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 

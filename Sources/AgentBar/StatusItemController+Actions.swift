@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 extension StatusItemController {
     /// Identifies which manual refresh a task belongs to, so per-provider refreshes stay independent

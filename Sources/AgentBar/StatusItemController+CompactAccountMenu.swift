@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 /// Shared renderer for the compact multi-account menu layout: full cards for the
 /// active and explicitly expanded accounts, one-line rows for the rest, and a

@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import SwiftUI
 
 /// Sidebar destinations of the settings window: fixed app panes plus one entry per provider.

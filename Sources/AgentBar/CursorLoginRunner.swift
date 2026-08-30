@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import Foundation
 
 private func normalizedCursorAccountID(_ value: String?) -> String? {

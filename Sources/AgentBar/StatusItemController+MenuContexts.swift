@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 extension StatusItemController {
     struct OpenAIWebContext {

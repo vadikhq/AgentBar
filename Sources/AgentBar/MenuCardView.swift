@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import SwiftUI
 
 /// SwiftUI card used inside the NSMenu to mirror Apple's rich menu panels.

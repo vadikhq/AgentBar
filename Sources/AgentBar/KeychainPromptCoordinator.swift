@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 import SweetCookieKit
 
 private enum KeychainPromptMessage {

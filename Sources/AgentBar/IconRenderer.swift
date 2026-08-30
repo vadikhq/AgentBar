@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 // swiftlint:disable:next type_body_length
 enum IconRenderer {

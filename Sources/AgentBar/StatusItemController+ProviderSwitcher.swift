@@ -1,5 +1,5 @@
-import AppKit
 import AgentBarCore
+import AppKit
 
 struct PendingProviderSwitcherRebuild {
     let menu: NSMenu
