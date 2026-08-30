@@ -1,9 +1,8 @@
 name: Monitor Upstream Changes
 
 on:
-  schedule:
-    # Run Monday and Thursday at 9 AM UTC
-    - cron: '0 9 * * 1,4'
+  # Personal fork: scheduled auto-run disabled to avoid unattended issue creation
+  # on this account. Re-add the schedule block below to restore it.
   workflow_dispatch:
     inputs:
       target:

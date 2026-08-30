@@ -1,10 +1,10 @@
-import CodexBarCore
+import AgentBarCore
 import Foundation
 import Testing
 
 /// Regression tests for a copy-pasted quote-unwrap helper that traps on length-1 input.
 ///
-/// 32 provider settings readers (plus `CodexBarConfig` and `CLIConfigCommand`) share a
+/// 32 provider settings readers (plus `AgentBarConfig` and `CLIConfigCommand`) share a
 /// `cleaned(_:)` helper of the form:
 ///
 ///     if (value.hasPrefix("\"") && value.hasSuffix("\"")) ||
@@ -18,7 +18,7 @@ import Testing
 /// `hasSuffix` return true, `removeFirst()` empties the string, and `removeLast()` then
 /// traps with "Can't remove last element from empty collection." This is reachable from
 /// a misconfigured env var (e.g. `ALIBABA_TOKEN_PLAN_COOKIE='"'`) and from quoted JSON
-/// values in `~/.codexbar/config.json`, both of which are user-controllable.
+/// values in `~/.agentbar/config.json`, both of which are user-controllable.
 ///
 /// These tests exercise two representative public readers — Alibaba Token Plan (the
 /// newest addition in #1098) and the Ollama API key reader (added in #1087) — by

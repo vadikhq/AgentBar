@@ -7,16 +7,16 @@
 # machine still had the checkout at that exact path. This check reproduces a
 # user machine: it copies the packaged app to a temp directory, launches the
 # binary directly (skipping LaunchServices, so it cannot re-activate a running
-# production CodexBar) with every file read under the repo checkout denied via
+# production AgentBar) with every file read under the repo checkout denied via
 # sandbox-exec, and requires the process to stay alive. A resource-bundle
 # regression now fails packaging instead of shipping.
 
 set -euo pipefail
 
-APP_BUNDLE="${1:?usage: verify_packaged_app_launch.sh /path/to/CodexBar.app}"
+APP_BUNDLE="${1:?usage: verify_packaged_app_launch.sh /path/to/AgentBar.app}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-SMOKE_SECONDS="${CODEXBAR_LAUNCH_SMOKE_SECONDS:-6}"
+SMOKE_SECONDS="${AGENTBAR_LAUNCH_SMOKE_SECONDS:-6}"
 # Swift runtime trap signatures for a missing SwiftPM resource bundle. These
 # always hard-fail packaging, even without a GUI session.
 FATAL_PATTERN='Fatal error|could not load resource bundle|unable to find bundle named'
@@ -24,21 +24,21 @@ FATAL_PATTERN='Fatal error|could not load resource bundle|unable to find bundle 
 log()  { printf '%s\n' "$*"; }
 warn() { printf 'WARN: %s\n' "$*" >&2; }
 
-if [[ "${CODEXBAR_SKIP_LAUNCH_SMOKE:-0}" == "1" ]]; then
-  log "Launch smoke check: skipped (CODEXBAR_SKIP_LAUNCH_SMOKE=1)."
+if [[ "${AGENTBAR_SKIP_LAUNCH_SMOKE:-0}" == "1" ]]; then
+  log "Launch smoke check: skipped (AGENTBAR_SKIP_LAUNCH_SMOKE=1)."
   exit 0
 fi
 
-if [[ ! -x "$APP_BUNDLE/Contents/MacOS/CodexBar" ]]; then
+if [[ ! -x "$APP_BUNDLE/Contents/MacOS/AgentBar" ]]; then
   echo "ERROR: Launch smoke check: missing executable in ${APP_BUNDLE}" >&2
   exit 1
 fi
-if [[ ! -x "$APP_BUNDLE/Contents/Helpers/CodexBarCLI" ]]; then
-  echo "ERROR: Launch smoke check: missing Helpers/CodexBarCLI in ${APP_BUNDLE}" >&2
+if [[ ! -x "$APP_BUNDLE/Contents/Helpers/AgentBarCLI" ]]; then
+  echo "ERROR: Launch smoke check: missing Helpers/AgentBarCLI in ${APP_BUNDLE}" >&2
   exit 1
 fi
-if [[ ! -d "$APP_BUNDLE/Contents/Helpers/CodexBar_CodexBarCore.bundle" ]]; then
-  echo "ERROR: Launch smoke check: missing CodexBarCore resource bundle beside Helpers/CodexBarCLI" >&2
+if [[ ! -d "$APP_BUNDLE/Contents/Helpers/AgentBar_AgentBarCore.bundle" ]]; then
+  echo "ERROR: Launch smoke check: missing AgentBarCore resource bundle beside Helpers/AgentBarCLI" >&2
   exit 1
 fi
 
@@ -56,12 +56,12 @@ if [[ "$(launchctl managername 2>/dev/null || true)" != "Aqua" ]]; then
   warn "Launch smoke check: no Aqua session; only the resource-bundle fatal signature will fail packaging."
 fi
 
-SMOKE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/codexbar-launch-smoke.XXXXXX")"
+SMOKE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/agentbar-launch-smoke.XXXXXX")"
 SMOKE_PID=""
 # shellcheck disable=SC2329  # invoked via trap
 cleanup() {
   # Kill only our own spawned PID; never pattern-kill, so a running production
-  # CodexBar is untouched.
+  # AgentBar is untouched.
   if [[ -n "$SMOKE_PID" ]]; then
     if kill -0 "$SMOKE_PID" 2>/dev/null; then
       kill "$SMOKE_PID" 2>/dev/null || true
@@ -77,11 +77,11 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-cp -R "$APP_BUNDLE" "$SMOKE_DIR/CodexBar.app"
-SMOKE_BIN="$SMOKE_DIR/CodexBar.app/Contents/MacOS/CodexBar"
-CLI_BIN="$SMOKE_DIR/CodexBar.app/Contents/Helpers/CodexBarCLI"
+cp -R "$APP_BUNDLE" "$SMOKE_DIR/AgentBar.app"
+SMOKE_BIN="$SMOKE_DIR/AgentBar.app/Contents/MacOS/AgentBar"
+CLI_BIN="$SMOKE_DIR/AgentBar.app/Contents/Helpers/AgentBarCLI"
 CLI_SYMLINK_DIR="$SMOKE_DIR/bin"
-CLI_SYMLINK="$CLI_SYMLINK_DIR/codexbar"
+CLI_SYMLINK="$CLI_SYMLINK_DIR/agentbar"
 SMOKE_LOG="$SMOKE_DIR/launch.log"
 PROBE_LOG="$SMOKE_DIR/probe.log"
 CLI_PROBE_LOG="$SMOKE_DIR/cli-probe.log"
@@ -122,7 +122,7 @@ fail_with_cli_symlink_probe_log() {
 log "Launch smoke check: probing packaged Helpers CLI resource loads with ${ROOT} unreadable."
 (
   cd "$SMOKE_DIR"
-  exec env CODEXBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$CLI_BIN"
+  exec env AGENTBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$CLI_BIN"
 ) >"$CLI_PROBE_LOG" 2>&1 &
 SMOKE_PID=$!
 CLI_PROBE_OK=0
@@ -139,15 +139,15 @@ fi
 CLI_PROBE_STATUS=0
 wait "$SMOKE_PID" || CLI_PROBE_STATUS=$?
 SMOKE_PID=""
-if [[ "$CLI_PROBE_STATUS" -ne 0 ]] || ! grep -q "CODEXBAR_RESOURCE_SMOKE_OK" "$CLI_PROBE_LOG"; then
-  fail_with_cli_probe_log "Launch smoke check FAILED: packaged Helpers CLI cannot load CodexBarCore resources without the build checkout. Exit status: ${CLI_PROBE_STATUS}."
+if [[ "$CLI_PROBE_STATUS" -ne 0 ]] || ! grep -q "AGENTBAR_RESOURCE_SMOKE_OK" "$CLI_PROBE_LOG"; then
+  fail_with_cli_probe_log "Launch smoke check FAILED: packaged Helpers CLI cannot load AgentBarCore resources without the build checkout. Exit status: ${CLI_PROBE_STATUS}."
 fi
 log "Launch smoke check: Helpers CLI resource probe OK."
 
 log "Launch smoke check: probing symlinked Helpers CLI resource loads with ${ROOT} unreadable."
 (
   cd "$SMOKE_DIR"
-  exec env CODEXBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$CLI_SYMLINK"
+  exec env AGENTBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$CLI_SYMLINK"
 ) >"$CLI_SYMLINK_PROBE_LOG" 2>&1 &
 SMOKE_PID=$!
 CLI_SYMLINK_PROBE_OK=0
@@ -164,19 +164,19 @@ fi
 CLI_SYMLINK_PROBE_STATUS=0
 wait "$SMOKE_PID" || CLI_SYMLINK_PROBE_STATUS=$?
 SMOKE_PID=""
-if [[ "$CLI_SYMLINK_PROBE_STATUS" -ne 0 ]] || ! grep -q "CODEXBAR_RESOURCE_SMOKE_OK" "$CLI_SYMLINK_PROBE_LOG"; then
-  fail_with_cli_symlink_probe_log "Launch smoke check FAILED: symlinked packaged Helpers CLI cannot load CodexBarCore resources without the build checkout. Exit status: ${CLI_SYMLINK_PROBE_STATUS}."
+if [[ "$CLI_SYMLINK_PROBE_STATUS" -ne 0 ]] || ! grep -q "AGENTBAR_RESOURCE_SMOKE_OK" "$CLI_SYMLINK_PROBE_LOG"; then
+  fail_with_cli_symlink_probe_log "Launch smoke check FAILED: symlinked packaged Helpers CLI cannot load AgentBarCore resources without the build checkout. Exit status: ${CLI_SYMLINK_PROBE_STATUS}."
 fi
 log "Launch smoke check: symlinked Helpers CLI resource probe OK."
 
-# Phase 1 (deterministic, headless-safe): CODEXBAR_RESOURCE_SMOKE=1 makes the
+# Phase 1 (deterministic, headless-safe): AGENTBAR_RESOURCE_SMOKE=1 makes the
 # app force the resource loads that trapped in 0.48.0 and exit before any UI.
 # The loads are lazy in normal operation, so the liveness phase below cannot be
 # relied on alone to reach them.
 log "Launch smoke check: probing packaged resource loads with ${ROOT} unreadable."
 (
   cd "$SMOKE_DIR"
-  exec env CODEXBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$SMOKE_BIN"
+  exec env AGENTBAR_RESOURCE_SMOKE=1 sandbox-exec -p "$SANDBOX_PROFILE" "$SMOKE_BIN"
 ) >"$PROBE_LOG" 2>&1 &
 SMOKE_PID=$!
 PROBE_OK=0
@@ -193,7 +193,7 @@ fi
 PROBE_STATUS=0
 wait "$SMOKE_PID" || PROBE_STATUS=$?
 SMOKE_PID=""
-if [[ "$PROBE_STATUS" -ne 0 ]] || ! grep -q "CODEXBAR_RESOURCE_SMOKE_OK" "$PROBE_LOG"; then
+if [[ "$PROBE_STATUS" -ne 0 ]] || ! grep -q "AGENTBAR_RESOURCE_SMOKE_OK" "$PROBE_LOG"; then
   fail_with_probe_log "Launch smoke check FAILED: packaged app cannot load its resource bundles without the build checkout (the 0.48.0 crash class, #2738). Do not ship this build. Exit status: ${PROBE_STATUS}."
 fi
 log "Launch smoke check: resource probe OK."

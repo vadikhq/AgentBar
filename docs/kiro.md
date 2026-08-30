@@ -16,10 +16,10 @@ Kiro uses the AWS `kiro-cli` tool to fetch usage data. No browser cookies or OAu
 1) **CLI command** (primary)
    - Command: `kiro-cli chat --no-interactive "/usage"`
    - Timeout: 20 seconds (idle cutoff after 4 seconds of no output once the CLI starts responding).
-   - CodexBar tries ordinary stdout/stderr pipes first for current Kiro CLI releases. Incomplete or unusable
+   - AgentBar tries ordinary stdout/stderr pipes first for current Kiro CLI releases. Incomplete or unusable
      pipe output falls back to a pseudo-terminal within the same overall command deadline for older releases.
    - Requires `kiro-cli` installed and logged in via AWS Builder ID.
-   - Output is ANSI-decorated; CodexBar strips escape sequences before parsing.
+   - Output is ANSI-decorated; AgentBar strips escape sequences before parsing.
 
 2) **`GetUsageLimits` API** (overage enrichment, best effort)
    - The CLI report states credits against the plan alone and **omits the overage section entirely for
@@ -56,7 +56,7 @@ Kiro uses the AWS `kiro-cli` tool to fetch usage data. No browser cookies or OAu
   - `resetsAt`: parsed from `resets on MM/DD` (assumes current or next year), or `nextDateReset` from the API.
 - **Secondary window**: Bonus credits (when present).
   - Parsed from `Bonus credits: X.XX/Y credits used`. Always CLI-sourced. When `GetUsageLimits` includes a
-    non-empty `bonuses[]` array, CodexBar keeps the CLI plan gauge instead of treating bonus spend as plan
+    non-empty `bonuses[]` array, AgentBar keeps the CLI plan gauge instead of treating bonus spend as plan
     usage; overage enrichment still applies.
   - Expiry from `expires in N days`.
 - **Extra window** `kiro-overage`: overage credits spent against `overageCapWithPrecision` (API only). This
@@ -82,7 +82,7 @@ Kiro does not have a dedicated status page. The "View Status" link opens the AWS
 
 ## Key files
 
-- `Sources/CodexBarCore/Providers/Kiro/KiroProviderDescriptor.swift`
-- `Sources/CodexBarCore/Providers/Kiro/KiroStatusProbe.swift`
-- `Sources/CodexBarCore/Providers/Kiro/KiroUsageLimitsAPI.swift`
-- `Sources/CodexBar/Providers/Kiro/KiroProviderImplementation.swift`
+- `Sources/AgentBarCore/Providers/Kiro/KiroProviderDescriptor.swift`
+- `Sources/AgentBarCore/Providers/Kiro/KiroStatusProbe.swift`
+- `Sources/AgentBarCore/Providers/Kiro/KiroUsageLimitsAPI.swift`
+- `Sources/AgentBar/Providers/Kiro/KiroProviderImplementation.swift`

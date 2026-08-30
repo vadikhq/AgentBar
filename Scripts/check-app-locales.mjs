@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const resources = path.join(repoRoot, "Sources/CodexBar/Resources");
+const resources = path.join(repoRoot, "Sources/AgentBar/Resources");
 const english = readCatalog("en");
 const englishKeys = Object.keys(english).sort();
 const strictLocales = ["ar", "ca", "fa", "th"];

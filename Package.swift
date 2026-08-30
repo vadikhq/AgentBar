@@ -4,13 +4,13 @@ import PackageDescription
 
 let sweetCookieKitPath = "../SweetCookieKit"
 let useLocalSweetCookieKit =
-    ProcessInfo.processInfo.environment["CODEXBAR_USE_LOCAL_SWEETCOOKIEKIT"] == "1"
+    ProcessInfo.processInfo.environment["AGENTBAR_USE_LOCAL_SWEETCOOKIEKIT"] == "1"
 let sweetCookieKitDependency: Package.Dependency =
     useLocalSweetCookieKit && FileManager.default.fileExists(atPath: sweetCookieKitPath)
     ? .package(path: sweetCookieKitPath)
     : .package(url: "https://github.com/steipete/SweetCookieKit", from: "0.5.2")
 
-let sqlite3LibDir = ProcessInfo.processInfo.environment["CODEXBAR_SQLITE3_LIB_DIR"]?
+let sqlite3LibDir = ProcessInfo.processInfo.environment["AGENTBAR_SQLITE3_LIB_DIR"]?
     .trimmingCharacters(in: .whitespacesAndNewlines)
 let sqlite3LinkerSettings: [LinkerSetting] = if let sqlite3LibDir, !sqlite3LibDir.isEmpty {
     [.unsafeFlags(["-L\(sqlite3LibDir)"], .when(platforms: [.linux]))]
@@ -19,25 +19,25 @@ let sqlite3LinkerSettings: [LinkerSetting] = if let sqlite3LibDir, !sqlite3LibDi
 }
 
 let package = Package(
-    name: "CodexBar",
+    name: "AgentBar",
     defaultLocalization: "en",
     platforms: [
         .macOS(.v14),
     ],
     products: {
         var products: [Product] = [
-            .library(name: "CodexBarCore", targets: ["CodexBarCore"]),
-            .executable(name: "CodexBarCLI", targets: ["CodexBarCLI"]),
+            .library(name: "AgentBarCore", targets: ["AgentBarCore"]),
+            .executable(name: "AgentBarCLI", targets: ["AgentBarCLI"]),
             // Offline adaptive-refresh replay harness. Keep the supporting library package-internal.
             .executable(name: "AdaptiveReplayCLI", targets: ["AdaptiveReplayCLI"]),
         ]
 
         #if os(macOS)
         products.append(contentsOf: [
-            .executable(name: "CodexBar", targets: ["CodexBar"]),
-            .executable(name: "CodexBarClaudeWatchdog", targets: ["CodexBarClaudeWatchdog"]),
-            .executable(name: "CodexBarWidget", targets: ["CodexBarWidget"]),
-            .executable(name: "CodexBarClaudeWebProbe", targets: ["CodexBarClaudeWebProbe"]),
+            .executable(name: "AgentBar", targets: ["AgentBar"]),
+            .executable(name: "AgentBarClaudeWatchdog", targets: ["AgentBarClaudeWatchdog"]),
+            .executable(name: "AgentBarWidget", targets: ["AgentBarWidget"]),
+            .executable(name: "AgentBarClaudeWebProbe", targets: ["AgentBarClaudeWebProbe"]),
         ])
         #endif
 
@@ -73,7 +73,7 @@ let package = Package(
                     .brew(["sqlite3"]),
                 ]),
             .target(
-                name: "CodexBarCore",
+                name: "AgentBarCore",
                 dependencies: [
                     "CQuickJS",
                     .target(name: "CSQLite3", condition: .when(platforms: [.linux])),
@@ -91,13 +91,13 @@ let package = Package(
                     .linkedFramework("JavaScriptCore", .when(platforms: [.macOS])),
                 ]),
             .executableTarget(
-                name: "CodexBarCLI",
+                name: "AgentBarCLI",
                 dependencies: [
-                    "CodexBarCore",
+                    "AgentBarCore",
                     .product(name: "Commander", package: "Commander"),
                     .product(name: "Crypto", package: "swift-crypto"),
                 ],
-                path: "Sources/CodexBarCLI",
+                path: "Sources/AgentBarCLI",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ],
@@ -105,9 +105,9 @@ let package = Package(
             // Crash-test subprocess: tests SIGKILL it mid-save to prove the cost store's
             // save cycle is atomic. Not shipped; built only as a test dependency.
             .executableTarget(
-                name: "CodexBarCostStoreCrashProbe",
-                dependencies: ["CodexBarCore"],
-                path: "Sources/CodexBarCostStoreCrashProbe",
+                name: "AgentBarCostStoreCrashProbe",
+                dependencies: ["AgentBarCore"],
+                path: "Sources/AgentBarCostStoreCrashProbe",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ],
@@ -122,7 +122,7 @@ let package = Package(
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
             // Offline adaptive-refresh replay harness: pure Foundation,
-            // no CodexBar/CodexBarCore dependency, so it builds anywhere CodexBarCore does.
+            // no AgentBar/AgentBarCore dependency, so it builds anywhere AgentBarCore does.
             .target(
                 name: "AdaptiveReplayKit",
                 dependencies: ["AdaptiveRefreshCore"],
@@ -155,18 +155,18 @@ let package = Package(
                     .enableExperimentalFeature("SwiftTesting"),
                 ]),
             .testTarget(
-                name: "CodexBarPluginTests",
-                dependencies: ["CodexBarCore"],
+                name: "AgentBarPluginTests",
+                dependencies: ["AgentBarCore"],
                 path: "TestsPlugin",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                     .enableExperimentalFeature("SwiftTesting"),
                 ]),
             .testTarget(
-                name: "CodexBarLinuxTests",
+                name: "AgentBarLinuxTests",
                 dependencies: [
-                    "CodexBarCore",
-                    "CodexBarCLI",
+                    "AgentBarCore",
+                    "AgentBarCLI",
                     .target(name: "CSQLite3", condition: .when(platforms: [.linux])),
                 ],
                 path: "TestsLinux",
@@ -179,22 +179,22 @@ let package = Package(
         #if os(macOS)
         targets.append(contentsOf: [
             .executableTarget(
-                name: "CodexBarClaudeWatchdog",
+                name: "AgentBarClaudeWatchdog",
                 dependencies: [],
-                path: "Sources/CodexBarClaudeWatchdog",
+                path: "Sources/AgentBarClaudeWatchdog",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
             .executableTarget(
-                name: "CodexBar",
+                name: "AgentBar",
                 dependencies: [
                     .product(name: "Sparkle", package: "Sparkle"),
                     .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
                     .product(name: "Vortex", package: "Vortex"),
                     "AdaptiveRefreshCore",
-                    "CodexBarCore",
+                    "AgentBarCore",
                 ],
-                path: "Sources/CodexBar",
+                path: "Sources/AgentBar",
                 resources: [
                     .process("Resources"),
                 ],
@@ -204,36 +204,36 @@ let package = Package(
                     .define("ENABLE_SPARKLE"),
                 ]),
             .executableTarget(
-                name: "CodexBarWidget",
-                dependencies: ["CodexBarCore"],
-                path: "Sources/CodexBarWidget",
+                name: "AgentBarWidget",
+                dependencies: ["AgentBarCore"],
+                path: "Sources/AgentBarWidget",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
             .executableTarget(
-                name: "CodexBarClaudeWebProbe",
-                dependencies: ["CodexBarCore"],
-                path: "Sources/CodexBarClaudeWebProbe",
+                name: "AgentBarClaudeWebProbe",
+                dependencies: ["AgentBarCore"],
+                path: "Sources/AgentBarClaudeWebProbe",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
         ])
 
         targets.append(.testTarget(
-            name: "CodexBarTests",
-            dependencies: ["CodexBar", "CodexBarCore", "CodexBarCLI", "CodexBarCostStoreCrashProbe", "CodexBarWidget"],
+            name: "AgentBarTests",
+            dependencies: ["AgentBar", "AgentBarCore", "AgentBarCLI", "AgentBarCostStoreCrashProbe", "AgentBarWidget"],
             path: "Tests",
             exclude: [
                 "AdaptiveReplayCLITests",
                 "AdaptiveReplayKitTests",
-                "CodexBarTests/ProviderPluginDetailsParityTests.swift",
-                "CodexBarTests/ProviderPluginExtensionParityTests.swift",
-                "CodexBarTests/ProviderPluginParityTests.swift",
-                "CodexBarTests/ProviderPluginRuntimeTests.swift",
-                "CodexBarTests/Sub2APIPluginGoldenTests.swift",
+                "AgentBarTests/ProviderPluginDetailsParityTests.swift",
+                "AgentBarTests/ProviderPluginExtensionParityTests.swift",
+                "AgentBarTests/ProviderPluginParityTests.swift",
+                "AgentBarTests/ProviderPluginRuntimeTests.swift",
+                "AgentBarTests/Sub2APIPluginGoldenTests.swift",
             ],
             resources: [
-                .copy("CodexBarTests/Fixtures"),
+                .copy("AgentBarTests/Fixtures"),
             ],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),

@@ -8,7 +8,7 @@ public CLI JSON contract.
 ## Internal navigation scaffold
 
 Debug builds can expose a Codex-only **Workspaces** menu action with
-`CODEXBAR_ENABLE_WORKSPACES_MENU=1`. It opens one reusable native window showing
+`AGENTBAR_ENABLE_WORKSPACES_MENU=1`. It opens one reusable native window showing
 **No data yet**; this preparatory navigation slice does not load the index,
 start scans, read account data, or persist window geometry. Release builds
 always disable this gate, even if the environment variable is present. A
@@ -42,13 +42,13 @@ The supported internal presentation boundary is:
 The Codex cost cache is:
 
 ```text
-~/Library/Caches/CodexBar/cost-usage/codex-v11.json
+~/Library/Caches/AgentBar/cost-usage/codex-v11.json
 ```
 
 The Workspaces sidecar is:
 
 ```text
-~/Library/Caches/CodexBar/local-usage/codex-workspaces-v1.sqlite
+~/Library/Caches/AgentBar/local-usage/codex-workspaces-v1.sqlite
 ```
 
 The sidecar currently uses SQLite schema version 5 and snapshot payload format

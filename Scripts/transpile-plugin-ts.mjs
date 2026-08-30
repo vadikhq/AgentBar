@@ -8,11 +8,11 @@ if (!sourcePath || !sucrasePath) {
 }
 
 const context = vm.createContext({
-  __codexbarTypeScriptSource: fs.readFileSync(sourcePath, "utf8"),
+  __agentbarTypeScriptSource: fs.readFileSync(sourcePath, "utf8"),
 });
 vm.runInContext(fs.readFileSync(sucrasePath, "utf8"), context, { filename: sucrasePath });
 const output = vm.runInContext(
-  "sucrase.transform(__codexbarTypeScriptSource, {transforms:['typescript']}).code",
+  "sucrase.transform(__agentbarTypeScriptSource, {transforms:['typescript']}).code",
   context,
   { filename: "<sucrase-transform>" },
 );

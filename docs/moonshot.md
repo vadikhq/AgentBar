@@ -9,7 +9,7 @@ read_when:
 # Moonshot / Kimi Open Platform provider
 
 Moonshot / Kimi Open Platform is API-only. Balance is reported by `GET /v1/users/me/balance`,
-so CodexBar only needs a valid API key to show the current account balance.
+so AgentBar only needs a valid API key to show the current account balance.
 
 The native fetcher remains authoritative because this balance-only result is intentionally represented in snapshot
 identity without a rate window, cost, or detail, while the plugin contract rejects identity-only snapshots.
@@ -21,13 +21,13 @@ Kimi API docs use the Moonshot API surface for current Kimi models: examples rea
 quickstart. This provider is therefore named after the account and billing surface,
 not a specific Kimi model version.
 
-CodexBar uses the official Moonshot account and billing surface rather than unofficial
+AgentBar uses the official Moonshot account and billing surface rather than unofficial
 third-party Kimi relays.
 
 ## Data sources
 
-1. **API key** stored in `~/.codexbar/config.json` or supplied via `MOONSHOT_API_KEY` / `MOONSHOT_KEY`.
-   CodexBar binds saved keys to the selected regional host. Switching regions does not send the saved key to
+1. **API key** stored in `~/.agentbar/config.json` or supplied via `MOONSHOT_API_KEY` / `MOONSHOT_KEY`.
+   AgentBar binds saved keys to the selected regional host. Switching regions does not send the saved key to
    the other host; switch back or replace it with a key issued for the newly selected region.
 2. **Region**
    - International: `https://api.moonshot.ai/v1/users/me/balance`
@@ -47,8 +47,8 @@ third-party Kimi relays.
 
 ## Key files
 
-- `Sources/CodexBarCore/Providers/Moonshot/MoonshotProviderDescriptor.swift` (descriptor + fetch strategy)
-- `Sources/CodexBarCore/Providers/Moonshot/MoonshotUsageFetcher.swift` (HTTP client + JSON parser)
-- `Sources/CodexBarCore/Providers/Moonshot/MoonshotSettingsReader.swift` (env var resolution)
-- `Sources/CodexBar/Providers/Moonshot/MoonshotProviderImplementation.swift` (settings field + activation logic)
-- `Sources/CodexBar/Providers/Moonshot/MoonshotSettingsStore.swift` (SettingsStore extension)
+- `Sources/AgentBarCore/Providers/Moonshot/MoonshotProviderDescriptor.swift` (descriptor + fetch strategy)
+- `Sources/AgentBarCore/Providers/Moonshot/MoonshotUsageFetcher.swift` (HTTP client + JSON parser)
+- `Sources/AgentBarCore/Providers/Moonshot/MoonshotSettingsReader.swift` (env var resolution)
+- `Sources/AgentBar/Providers/Moonshot/MoonshotProviderImplementation.swift` (settings field + activation logic)
+- `Sources/AgentBar/Providers/Moonshot/MoonshotSettingsStore.swift` (SettingsStore extension)

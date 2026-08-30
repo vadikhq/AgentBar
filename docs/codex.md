@@ -29,7 +29,7 @@ Usage source picker:
 
 ### OAuth API (preferred for the app)
 - Reads OAuth tokens from `~/.codex/auth.json` (or `$CODEX_HOME/auth.json`).
-- CodexBar never publishes refreshed native tokens into `auth.json`; when native credentials are stale,
+- AgentBar never publishes refreshed native tokens into `auth.json`; when native credentials are stale,
   the explicit OAuth path delegates recovery to the Codex CLI, which owns that file. If the CLI is unavailable,
   the OAuth error is surfaced instead of mutating the shared file.
 - Calls `GET https://chatgpt.com/backend-api/wham/usage` (default) with `Authorization: Bearer <token>`.
@@ -37,7 +37,7 @@ Usage source picker:
   `GET https://chatgpt.com/backend-api/wham/rate-limit-reset-credits` using the same account-scoped OAuth context;
   the CLI requests it only when optional credits are included.
 - The menu and provider settings list every still-available expiry, while the optional credits setting controls
-  nearing-expiry notifications. CodexBar does not redeem or modify reset credits.
+  nearing-expiry notifications. AgentBar does not redeem or modify reset credits.
 - `rate_limit.primary_window` / `secondary_window` map to the session/weekly lanes.
 - Suspicious weekly resets keep the last trusted usage while confirmation is pending. A successful refresh for the
   same account and workspace clears stale connectivity errors even when the reading is withheld; failed, cancelled,
@@ -54,7 +54,7 @@ Usage source picker:
   preview. It does not change fetching, history, notifications, widgets, credits, or other extra limits.
 
 ### Optional external OAuth sources (off by default)
-- **External Codex OAuth sources** is a provider setting that must be enabled explicitly before CodexBar reads
+- **External Codex OAuth sources** is a provider setting that must be enabled explicitly before AgentBar reads
   another application's OAuth file. It is off by default because this is a cross-application credential boundary.
 - Without an explicit `$CODEX_HOME`, native Codex auth wins first, followed by legacy `~/.config/codex/auth.json`,
   then OpenCode's `~/.local/share/opencode/auth.json` (or the equivalent `XDG_DATA_HOME` path).
@@ -63,19 +63,19 @@ Usage source picker:
   publish OAuth token material into a shared `auth.json` without a cross-writer publication contract. Stale native
   credentials can delegate to the CLI recovery path, while stale external credentials fail closed in every mode.
   Automatic mode also suppresses unscoped CLI fallback whenever a managed workspace is selected. Explicit
-  managed-account workspace selection is stored in CodexBar's private managed-account metadata; it never edits the
+  managed-account workspace selection is stored in AgentBar's private managed-account metadata; it never edits the
   source `auth.json` or publishes an `account_id` change back to another application's credential file.
 - Reusing OpenCode OAuth enables remote account quota, not OpenCode session token/cost ingestion. See
   [OpenCode with Codex or OpenAI](opencode.md#using-opencode-with-codex-or-openai) for the current history boundary.
 
 ### Advanced profile-home accounts
 - Managed Codex accounts remain the default multi-account path.
-- Advanced users can add existing Codex homes to `~/.codexbar/config.json` with
+- Advanced users can add existing Codex homes to `~/.agentbar/config.json` with
   `providers[].codexProfileHomePaths`.
 - Each configured path must be absolute or start with `~/`, and point at a Codex home that contains `auth.json`.
-- CodexBar reads identity from the configured home, exposes it in the Codex account switcher, and scopes
+- AgentBar reads identity from the configured home, exposes it in the Codex account switcher, and scopes
   remote Codex fetches with `CODEX_HOME`.
-- Profile homes are not copied, reauthenticated, or removed by CodexBar.
+- Profile homes are not copied, reauthenticated, or removed by AgentBar.
 
 Example:
 
@@ -111,7 +111,7 @@ Example:
   3) Firefox: `~/Library/Application Support/Firefox/Profiles/*/cookies.sqlite`
   - Domains loaded: `chatgpt.com`, `openai.com`.
   - No cookie-name filter; we import all matching domain cookies.
-- Cached cookies: Keychain cache `com.steipete.codexbar.cache` (account `cookie.codex`, source + timestamp).
+- Cached cookies: Keychain cache `com.vadikhq.agentbar.cache` (account `cookie.codex`, source + timestamp).
   Reused before re-importing from browsers.
 - Manual cookie header:
   - Paste the `Cookie:` header from a `chatgpt.com` request in Preferences → Providers → Codex.
@@ -136,16 +136,16 @@ Example:
   - `account/read`
   - `account/rateLimits/read`
 - RPC reads are bounded: initialization has a longer startup budget, and normal requests have a shorter per-method
-  timeout. On timeout, CodexBar closes the child `codex app-server` process's stdin and escalates from SIGTERM to
+  timeout. On timeout, AgentBar closes the child `codex app-server` process's stdin and escalates from SIGTERM to
   SIGKILL after a bounded grace period, so the stdout reader unwinds and unresponsive children cannot linger.
 - Provides:
   - Usage windows (primary + secondary) with reset timestamps.
   - Credits snapshot (balance, hasCredits, unlimited).
   - Account identity (email + plan type) when available.
 - App-server errors are terminal for the CLI strategy, except when Codex includes a recoverable `wham/usage` JSON body in the error text.
-- If macOS blocks or quarantines the `codex` executable, CodexBar records the launch failure and skips background CLI
+- If macOS blocks or quarantines the `codex` executable, AgentBar records the launch failure and skips background CLI
   launches for 30 minutes. Use a manual refresh after reinstalling or unblocking `codex` to retry immediately.
-- CodexBar also discovers the Codex CLI bundled with current ChatGPT and legacy Codex desktop apps, even when `codex`
+- AgentBar also discovers the Codex CLI bundled with current ChatGPT and legacy Codex desktop apps, even when `codex`
   is absent from the shell PATH.
 - If managed Codex account login still reports a missing executable, turn on **Show debug settings** in
   **Settings > Advanced**, then check **Settings > Debug > CLI Paths**. When no Codex binary appears there, confirm
@@ -153,7 +153,7 @@ Example:
   `npm install -g --include=optional @openai/codex@latest` before retrying Add Account.
 
 ### Codex CLI PTY diagnostics (`/status`)
-- Manual/debug parser only; automatic background refresh and `CodexBarCLI usage --source cli` do not launch bare Codex TUI.
+- Manual/debug parser only; automatic background refresh and `AgentBarCLI usage --source cli` do not launch bare Codex TUI.
 - Kept for explicit diagnostics/parser coverage because bare `codex` TUI can start interactive auth and open browser tabs.
 - Parses rendered `/status` output:
   - `Credits:` line
@@ -199,8 +199,8 @@ Example:
   - Native conversation rows reuse the corrected cached per-file totals and existing pricing tables. They are hidden
     when pi-compatible usage joins the aggregate because the native-only rows would not reconcile with the merged total.
 - Cache:
-  - Native session store: `~/Library/Caches/CodexBar/cost-usage/cost-usage.sqlite`
-  - pi-compatible session cache: `~/Library/Caches/CodexBar/cost-usage/pi-sessions-v8.json`
+  - Native session store: `~/Library/Caches/AgentBar/cost-usage/cost-usage.sqlite`
+  - pi-compatible session cache: `~/Library/Caches/AgentBar/cost-usage/pi-sessions-v8.json`
   - Catch-up status reads progress metadata without loading historical usage JSON or replay bodies. Cached reports
     retain row-level pricing evidence and project/session details, but omit raw token snapshots, accumulator state,
     and replay bodies. File cursor metadata, including JSONL resume state, remains available for progress tracking.
@@ -230,10 +230,10 @@ by one Codex account. The normal Codex cost menu and CLI scan continue to includ
 dashboard labels its values as local estimates and keeps currencies separate.
 
 ## Key files
-- Web: `Sources/CodexBarCore/OpenAIWeb/*`
-- CLI RPC + diagnostic PTY parser: `Sources/CodexBarCore/UsageFetcher.swift`,
-  `Sources/CodexBarCore/Providers/Codex/CodexStatusProbe.swift`
-- Cost usage: `Sources/CodexBarCore/CostUsageFetcher.swift`,
-  `Sources/CodexBarCore/PiSessionCostScanner.swift`,
-  `Sources/CodexBarCore/PiSessionCostCache.swift`,
-  `Sources/CodexBarCore/Vendored/CostUsage/*`
+- Web: `Sources/AgentBarCore/OpenAIWeb/*`
+- CLI RPC + diagnostic PTY parser: `Sources/AgentBarCore/UsageFetcher.swift`,
+  `Sources/AgentBarCore/Providers/Codex/CodexStatusProbe.swift`
+- Cost usage: `Sources/AgentBarCore/CostUsageFetcher.swift`,
+  `Sources/AgentBarCore/PiSessionCostScanner.swift`,
+  `Sources/AgentBarCore/PiSessionCostCache.swift`,
+  `Sources/AgentBarCore/Vendored/CostUsage/*`

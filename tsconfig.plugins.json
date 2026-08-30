@@ -6,6 +6,6 @@
     "target": "ES2022"
   },
   "include": [
-    "Sources/CodexBarCore/Resources/Plugins/*.ts"
+    "Sources/AgentBarCore/Resources/Plugins/*.ts"
   ]
 }

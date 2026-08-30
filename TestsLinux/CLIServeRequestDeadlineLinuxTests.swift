@@ -9,7 +9,7 @@ import Glibc
 import Musl
 #endif
 import Testing
-@testable import CodexBarCLI
+@testable import AgentBarCLI
 
 /// `readRequest` bounds each `recv` but not the request as a whole.
 ///

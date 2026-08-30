@@ -1,7 +1,7 @@
-import CodexBarCore
+import AgentBarCore
 import Foundation
 import Testing
-@testable import CodexBarCLI
+@testable import AgentBarCLI
 
 struct CLICardsClaudeSwapTests {
     private actor InvocationCounter {

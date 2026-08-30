@@ -18,7 +18,7 @@ import SQLite3
 #elseif canImport(CSQLite3)
 import CSQLite3
 #endif
-@testable import CodexBarCore
+@testable import AgentBarCore
 
 let transientDestructor = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
@@ -410,7 +410,7 @@ func runFDCycles(cacheRoot: URL, cycles: Int) async {
     }
 }
 
-// MARK: - lock holder (simulates a second CodexBar process mid-save)
+// MARK: - lock holder (simulates a second AgentBar process mid-save)
 
 func runHolder(dbPath: String, seconds: Double) {
     var db: OpaquePointer?

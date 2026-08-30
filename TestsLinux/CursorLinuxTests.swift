@@ -1,13 +1,13 @@
 #if os(Linux)
 import Foundation
 import Testing
-@testable import CodexBarCLI
-@testable import CodexBarCore
+@testable import AgentBarCLI
+@testable import AgentBarCore
 
 struct CursorLinuxTests {
     @Test
     func `Cursor automatic source without manual cookies requires macOS web support`() {
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(AgentBarCLI.sourceModeRequiresWebSupport(
             .auto,
             provider: .cursor,
             settings: ProviderSettingsSnapshot.make(
@@ -29,7 +29,7 @@ struct CursorLinuxTests {
 
     @Test
     func `Cursor manual cookie does not require macOS web support`() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(!AgentBarCLI.sourceModeRequiresWebSupport(
             .web,
             provider: .cursor,
             settings: ProviderSettingsSnapshot.make(
@@ -40,7 +40,7 @@ struct CursorLinuxTests {
 
     @Test
     func `empty Cursor manual cookie still requires macOS web support`() {
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(AgentBarCLI.sourceModeRequiresWebSupport(
             .web,
             provider: .cursor,
             settings: ProviderSettingsSnapshot.make(
@@ -51,7 +51,7 @@ struct CursorLinuxTests {
 
     @Test
     func `disabled Cursor web source still requires macOS web support`() {
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(AgentBarCLI.sourceModeRequiresWebSupport(
             .web,
             provider: .cursor,
             settings: ProviderSettingsSnapshot.make(

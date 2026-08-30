@@ -1,5 +1,5 @@
 import Foundation
-@testable import CodexBarCore
+@testable import AgentBarCore
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif

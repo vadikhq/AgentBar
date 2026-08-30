@@ -3,12 +3,12 @@ import Foundation
 import Glibc
 #endif
 import Testing
-@testable import CodexBarCore
+@testable import AgentBarCore
 
 #if os(Linux)
 @Suite(.serialized)
 struct ProcessPipeCaptureLinuxTests {
-    private static let emfileChildEnvironmentKey = "CODEXBAR_PROCESS_PIPE_EMFILE_CHILD"
+    private static let emfileChildEnvironmentKey = "AGENTBAR_PROCESS_PIPE_EMFILE_CHILD"
 
     @Test
     func `blocked onData callback does not block capture close`() throws {

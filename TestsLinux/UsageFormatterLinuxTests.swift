@@ -1,4 +1,4 @@
-import CodexBarCore
+import AgentBarCore
 import Testing
 
 @Suite(.serialized)

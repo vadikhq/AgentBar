@@ -1,7 +1,7 @@
 #if os(Linux)
 import Foundation
 import Testing
-@testable import CodexBarCore
+@testable import AgentBarCore
 
 struct OpenCodeGoPercentUnitLinuxTests {
     private func rollingPercent(used: Int, limit: Int) throws -> Double {

@@ -1,4 +1,4 @@
-import CodexBarCore
+import AgentBarCore
 import Foundation
 import Testing
 

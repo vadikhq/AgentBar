@@ -1,7 +1,7 @@
-import CodexBarCore
+import AgentBarCore
 import Foundation
 import Testing
-@testable import CodexBarCLI
+@testable import AgentBarCLI
 
 struct CLIHooksWatchSleepLinuxTests {
     @Test
@@ -10,7 +10,7 @@ struct CLIHooksWatchSleepLinuxTests {
         stop.request()
 
         let start = DispatchTime.now()
-        await CodexBarCLI.sleepInterruptibly(interval: 30, stop: stop)
+        await AgentBarCLI.sleepInterruptibly(interval: 30, stop: stop)
         let elapsedSeconds = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1e9
 
         #expect(elapsedSeconds < 1)
@@ -28,7 +28,7 @@ struct CLIHooksWatchSleepLinuxTests {
         }
 
         let start = DispatchTime.now()
-        await CodexBarCLI.sleepInterruptibly(interval: 10, stop: stop)
+        await AgentBarCLI.sleepInterruptibly(interval: 10, stop: stop)
         let elapsedSeconds = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1e9
 
         // The 0.3s signal must interrupt the 10s interval promptly; allow headroom for loaded
@@ -40,7 +40,7 @@ struct CLIHooksWatchSleepLinuxTests {
     func `sleeps the full interval when never signaled`() async {
         let stop = HooksWatchStopSignal()
         let start = DispatchTime.now()
-        await CodexBarCLI.sleepInterruptibly(interval: 0.4, stop: stop)
+        await AgentBarCLI.sleepInterruptibly(interval: 0.4, stop: stop)
         let elapsedSeconds = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1e9
 
         #expect(elapsedSeconds >= 0.35)

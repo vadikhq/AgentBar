@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import CodexBarCore
+@testable import AgentBarCore
 
 #if os(Linux)
 @Suite(.serialized)

@@ -1,4 +1,4 @@
-# CodexBar 🎚️ — May your tokens never run out.
+# AgentBar 🎚️ — May your tokens never run out.
 
 > Every AI coding limit, in your menu bar.
 
@@ -13,7 +13,7 @@
 
 Tiny macOS 14+ menu bar app that keeps **AI coding-provider limits visible** and shows when each window resets. Codex, OpenAI, Claude, Cursor, Gemini, Copilot, Grok, GroqCloud, ElevenLabs, Deepgram, z.ai, MiniMax, Kiro, Zed, Vertex AI, Augment, OpenRouter, LiteLLM, LLM Proxy, Codebuff, Command Code, ClinePass, AWS Bedrock, and many newer coding providers. One status item per provider, or Merge Icons mode with a provider switcher. No Dock icon, minimal UI, dynamic bar icons.
 
-<img src="docs/codexbar.png" alt="CodexBar menu popover with provider tiles, usage bars, and reset countdowns" width="520" />
+<img src="docs/agentbar.png" alt="AgentBar menu popover with provider tiles, usage bars, and reset countdowns" width="520" />
 
 ## Why
 
@@ -45,9 +45,9 @@ Arch Linux AUR package:
 yay -S codexbar-cli
 ```
 Or download release tarballs from GitHub Releases:
-- macOS: `CodexBarCLI-v<tag>-macos-arm64.tar.gz`, `CodexBarCLI-v<tag>-macos-x86_64.tar.gz`
-- Linux (glibc): `CodexBarCLI-v<tag>-linux-aarch64.tar.gz`, `CodexBarCLI-v<tag>-linux-x86_64.tar.gz`
-- Linux (static musl): `CodexBarCLI-v<tag>-linux-musl-aarch64.tar.gz`, `CodexBarCLI-v<tag>-linux-musl-x86_64.tar.gz`
+- macOS: `AgentBarCLI-v<tag>-macos-arm64.tar.gz`, `AgentBarCLI-v<tag>-macos-x86_64.tar.gz`
+- Linux (glibc): `AgentBarCLI-v<tag>-linux-aarch64.tar.gz`, `AgentBarCLI-v<tag>-linux-x86_64.tar.gz`
+- Linux (static musl): `AgentBarCLI-v<tag>-linux-musl-aarch64.tar.gz`, `AgentBarCLI-v<tag>-linux-musl-x86_64.tar.gz`
 
 ### First run
 - Open Settings → Providers and enable what you use.
@@ -55,20 +55,20 @@ Or download release tarballs from GitHub Releases:
 - Optional: Settings → Providers → Codex → OpenAI cookies (Automatic or Manual) to add dashboard extras.
 
 ### Set API keys from the CLI
-Provider toggles and API keys live in the resolved CodexBar config file. New installs use
-`~/.config/codexbar/config.json`; existing `~/.codexbar/config.json` installs still load from the legacy path. You can
+Provider toggles and API keys live in the resolved AgentBar config file. New installs use
+`~/.config/agentbar/config.json`; existing `~/.agentbar/config.json` installs still load from the legacy path. You can
 script the same provider list that Settings → Providers uses:
 
 ```bash
-codexbar config providers
-codexbar config enable --provider grok
-codexbar config disable --provider cursor
+agentbar config providers
+agentbar config enable --provider grok
+agentbar config disable --provider cursor
 ```
 
 For API-key providers, store a key without opening Settings:
 
 ```bash
-printf '%s' "$ELEVENLABS_API_KEY" | codexbar config set-api-key --provider elevenlabs --stdin
+printf '%s' "$ELEVENLABS_API_KEY" | agentbar config set-api-key --provider elevenlabs --stdin
 ```
 
 `set-api-key` trims the piped value, stores it with restrictive config-file permissions, and enables the provider by default. Use `--no-enable` to only save the key, or `--api-key <key>` for one-off local scripts where shell history is not a concern.
@@ -159,26 +159,26 @@ show an incident indicator.
 - Display controls for provider icons, labels, bars, reset-time style, and highest-usage auto-selection.
 - Fresh installs default to Adaptive refresh. Existing users keep every valid stored choice, while legacy unset or
   invalid preferences resolve to 5 minutes. Manual and fixed 1m, 2m, 5m, 15m, and 30m alternatives remain available.
-- Bundled CLI (`codexbar`) for scripts and CI (including `codexbar cost --provider codex`, `claude`, or `both` for local cost usage); macOS and Linux CLI builds available.
+- Bundled CLI (`agentbar`) for scripts and CI (including `agentbar cost --provider codex`, `claude`, or `both` for local cost usage); macOS and Linux CLI builds available.
 - WidgetKit widgets for supported providers.
 - Localized app and website with a shared 21-language catalog, automatic website detection, persistent pickers, and RTL support.
 - Optional session quota notifications and weekly-reset confetti.
 - Privacy-first: on-device parsing by default; browser cookies are opt-in and reused (no passwords stored).
 
 ## Privacy note
-Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it reads a small set of known locations (browser cookies/local storage, provider config files, local JSONL logs) when the related features are enabled. Plain Adaptive refresh never inspects local agent activity. The separate Adaptive (agent-aware) option asks before inspecting the running-process list (including command lines) to identify Codex/Claude and reading bounded known-session metadata. Declining returns to plain Adaptive. When allowed with Agent Sessions hidden, CodexBar retains only the latest activity time and discards session paths and identities. Provider tokens and token-account settings live in the CodexBar config file with restrictive file permissions. See the discussion and audit notes in [issue #12](https://github.com/steipete/CodexBar/issues/12).
+Wondering if AgentBar scans your disk? It doesn’t crawl your filesystem; it reads a small set of known locations (browser cookies/local storage, provider config files, local JSONL logs) when the related features are enabled. Plain Adaptive refresh never inspects local agent activity. The separate Adaptive (agent-aware) option asks before inspecting the running-process list (including command lines) to identify Codex/Claude and reading bounded known-session metadata. Declining returns to plain Adaptive. When allowed with Agent Sessions hidden, AgentBar retains only the latest activity time and discards session paths and identities. Provider tokens and token-account settings live in the AgentBar config file with restrictive file permissions. See the discussion and audit notes in [issue #12](https://github.com/steipete/CodexBar/issues/12).
 
 ## macOS permissions (why they’re needed)
 - **Full Disk Access (optional)**: only required to read Safari cookies/local storage for web-based providers. If you don’t grant it, use another supported browser, manual cookies/API keys, OAuth, or CLI/local sources where that provider supports them.
 - **Keychain access (prompted by macOS)**:
   Chromium cookie import needs the browser’s Safe Storage item, and an explicitly enabled Claude OAuth repair may
-  read Claude Code’s own Keychain item. Background CodexBar paths fail or skip instead of requesting authorization;
+  read Claude Code’s own Keychain item. Background AgentBar paths fail or skip instead of requesting authorization;
   a user-initiated import or repair can still show the macOS prompt. **Settings → Advanced → Disable Keychain
-  access** blocks CodexBar-owned Keychain operations and browser decryption, but cannot constrain provider-owned CLIs
-  that CodexBar launches. Manual cookie headers, API keys, and file-backed sources remain alternatives where
+  access** blocks AgentBar-owned Keychain operations and browser decryption, but cannot constrain provider-owned CLIs
+  that AgentBar launches. Manual cookie headers, API keys, and file-backed sources remain alternatives where
   supported. See [Keychain prompts](docs/keychain-prompts.md) for Allow Once vs. Always Allow, recurring grants, and
   safe troubleshooting.
-- **Files & Folders prompts (folder/volume access)**: CodexBar launches provider CLIs and local probes for some providers. If those helpers read a project directory or external drive, macOS may ask CodexBar for that folder/volume (e.g., Desktop or an external volume). This is driven by the helper’s working directory, not background disk scanning.
+- **Files & Folders prompts (folder/volume access)**: AgentBar launches provider CLIs and local probes for some providers. If those helpers read a project directory or external drive, macOS may ask AgentBar for that folder/volume (e.g., Desktop or an external volume). This is driven by the helper’s working directory, not background disk scanning.
 - **What we do not request in the background**: no Screen Recording or Accessibility permissions; user-triggered helper actions may ask macOS for Automation permission to open Terminal. No passwords are stored (browser cookies are reused when you opt in).
 
 ## Docs
@@ -210,8 +210,8 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
 Requires macOS 14+ and Swift 6.2+.
 
 ```bash
-./Scripts/package_app.sh        # builds CodexBar.app in-place with ad-hoc signing
-open CodexBar.app
+./Scripts/package_app.sh        # builds AgentBar.app in-place with ad-hoc signing
+open AgentBar.app
 ```
 
 Dev loop:
@@ -224,8 +224,8 @@ make docs-list                       # list docs with frontmatter summaries
 
 CLI install:
 ```bash
-# after installing CodexBar.app in /Applications
-./bin/install-codexbar-cli.sh
+# after installing AgentBar.app in /Applications
+./bin/install-agentbar-cli.sh
 ```
 
 ## Related
@@ -234,22 +234,22 @@ CLI install:
 - 🧿 [oracle](https://askoracle.dev) — Ask the oracle when you're stuck. Invoke GPT-5 Pro with a custom context and files.
 
 ## Looking for a Windows version?
-- [Win-CodexBar](https://github.com/Finesssee/Win-CodexBar)
+- [Win-AgentBar](https://github.com/Finesssee/Win-AgentBar)
 
 ## Linux desktop integration?
-- [codexbar-waybar](https://github.com/Marouan-chak/codexbar-waybar) — Waybar custom module + GTK4 popover for Hyprland / Sway / other Wayland compositors, built on top of the bundled Linux CLI.
-- [codexbar-cosmic-applet](https://github.com/andrew-verde/codexbar-cosmic-applet) — Native COSMIC (System76) desktop panel applet with a tab per provider, pace projections, and cost/token stats, built on top of the bundled Linux CLI.
-- [Codexbar GNOME](https://extensions.gnome.org/extension/9841/codexbar/) — GNOME Shell extension that brings CodexBar usage into the desktop panel.
-- [codexbar-cinnamon-applet](https://github.com/jacobcalvert/codexbar-cinnamon-applet) — Linux Mint Cinnamon panel applet powered by CodexBar's JSON output.
+- [agentbar-waybar](https://github.com/Marouan-chak/agentbar-waybar) — Waybar custom module + GTK4 popover for Hyprland / Sway / other Wayland compositors, built on top of the bundled Linux CLI.
+- [agentbar-cosmic-applet](https://github.com/andrew-verde/agentbar-cosmic-applet) — Native COSMIC (System76) desktop panel applet with a tab per provider, pace projections, and cost/token stats, built on top of the bundled Linux CLI.
+- [Agentbar GNOME](https://extensions.gnome.org/extension/9841/agentbar/) — GNOME Shell extension that brings AgentBar usage into the desktop panel.
+- [agentbar-cinnamon-applet](https://github.com/jacobcalvert/agentbar-cinnamon-applet) — Linux Mint Cinnamon panel applet powered by AgentBar's JSON output.
 - [noctalia-codex-usage](https://github.com/rayoplateado/noctalia-codex-usage) — Noctalia/Quickshell plugin that shows Codex 5-hour and weekly usage limits, built on top of the bundled Linux CLI.
-- [KodexBar](https://github.com/tylxr59/KodexBar) — KDE Plasma widget that shows CodexBar usage in the Plasma panel, built on top of the bundled Linux CLI.
-- [codexbar-plasmoid](https://github.com/psimaker/codexbar-plasmoid) — KDE Plasma 6 widget for CodexBar's meter icon, provider switcher, quota windows, pace, credits, local cost, and status, powered by the bundled Linux CLI.
-- [CodexBar Plasma](https://github.com/Lucenx9/codexbar-plasma) — KDE Plasma 6 widget with multi-provider views, account selection, cost history, notifications, configurable providers, and installable `.plasmoid` releases, powered by the bundled Linux CLI.
-- [CodexBar Meter](https://github.com/noctalia-dev/community-plugins/tree/main/codexbar-meter) — Noctalia v5 bar widget and panel showing every enabled provider's quota windows, credits, and pace, installable from Noctalia's plugin store, built on the bundled Linux CLI.
+- [KodexBar](https://github.com/tylxr59/KodexBar) — KDE Plasma widget that shows AgentBar usage in the Plasma panel, built on top of the bundled Linux CLI.
+- [agentbar-plasmoid](https://github.com/psimaker/agentbar-plasmoid) — KDE Plasma 6 widget for AgentBar's meter icon, provider switcher, quota windows, pace, credits, local cost, and status, powered by the bundled Linux CLI.
+- [AgentBar Plasma](https://github.com/Lucenx9/agentbar-plasma) — KDE Plasma 6 widget with multi-provider views, account selection, cost history, notifications, configurable providers, and installable `.plasmoid` releases, powered by the bundled Linux CLI.
+- [AgentBar Meter](https://github.com/noctalia-dev/community-plugins/tree/main/agentbar-meter) — Noctalia v5 bar widget and panel showing every enabled provider's quota windows, credits, and pace, installable from Noctalia's plugin store, built on the bundled Linux CLI.
 
 ## Status bar & terminal integration
-- [showy-quota](https://github.com/enieuwy/showy-quota) — always-on AI plan quota strips for SketchyBar, tmux, and Zellij (standalone WASM plugin), built on `codexbar serve` / the bundled CLI.
-- [AI Usage Limits](https://github.com/lenadweb/stream-deck-ai-limits) — Elgato Stream Deck integration for macOS: shows a selected CodexBar provider, account, and configurable quota or payload metrics on keys and Stream Deck+ dials, using local `codexbar serve`.
+- [showy-quota](https://github.com/enieuwy/showy-quota) — always-on AI plan quota strips for SketchyBar, tmux, and Zellij (standalone WASM plugin), built on `agentbar serve` / the bundled CLI.
+- [AI Usage Limits](https://github.com/lenadweb/stream-deck-ai-limits) — Elgato Stream Deck integration for macOS: shows a selected AgentBar provider, account, and configurable quota or payload metrics on keys and Stream Deck+ dials, using local `agentbar serve`.
 
 ## Credits
 Inspired by [ccusage](https://github.com/ryoppippi/ccusage) (MIT), specifically the cost usage tracking.

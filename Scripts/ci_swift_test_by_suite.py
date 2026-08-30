@@ -532,7 +532,7 @@ def shard_groups(groups: list[list[TestSelection]], shard_index: int | None, sha
 
 
 def prioritized_suites(suites: list[TestSelection]) -> list[TestSelection]:
-    priority = ["CodexBarTests.CLIEntryTests"]
+    priority = ["AgentBarTests.CLIEntryTests"]
     ordered = [suite for name in priority for suite in suites if suite.suite_name == name]
     ordered.extend(suite for suite in suites if suite.suite_name not in priority)
     return ordered
@@ -544,7 +544,7 @@ def filtered_suites_for_environment(suites: list[TestSelection]) -> list[TestSel
 
     # SwiftPM hangs before suite output for this executable-target suite on the Intel macOS runner.
     # Linux CI still runs it in the full Swift test lane, and local macOS runs it directly.
-    skipped = {"CodexBarTests.CLIEntryTests"}
+    skipped = {"AgentBarTests.CLIEntryTests"}
     filtered = [suite for suite in suites if suite.suite_name not in skipped]
     if len(filtered) != len(suites):
         print(f"Skipping macOS CI-only suites: {', '.join(sorted(skipped))}", flush=True)

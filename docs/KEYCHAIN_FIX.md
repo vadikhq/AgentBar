@@ -1,5 +1,5 @@
 ---
-summary: "Current and historical engineering notes for CodexBar Keychain prompt containment."
+summary: "Current and historical engineering notes for AgentBar Keychain prompt containment."
 read_when:
   - Auditing Keychain access boundaries
   - Investigating legacy secret migration
@@ -31,11 +31,11 @@ User-facing behavior and troubleshooting live in [Keychain prompts](keychain-pro
 
 ## Unified legacy migration
 
-`CodexBarConfigMigrator` is the single migration owner for retired token, cookie, MiniMax, Kimi, OpenCode, and token-
+`AgentBarConfigMigrator` is the single migration owner for retired token, cookie, MiniMax, Kimi, OpenCode, and token-
 account stores. It reads every legacy source before cleanup, persists successfully read values idempotently, and only
 clears legacy stores after config persistence succeeds and every loader was readable. A loader failure records the
 provider/store identity without secret data, blocks all cleanup for that launch, and leaves
-`codexbar.legacySecretsMigrationCompleted` unset so the next launch retries.
+`agentbar.legacySecretsMigrationCompleted` unset so the next launch retries.
 
 This ordering matters: “not found” is a successful read with no value, while “unreadable” is a migration failure. The
 latter must never be collapsed into absence because doing so could mark migration complete or clear another store
@@ -58,16 +58,16 @@ file-keychain ACL or for a code-signature/designated-requirement mismatch.
 
 ## Safe verification
 
-Routine tests run with `CODEXBAR_SUPPRESS_TEST_KEYCHAIN_ACCESS=1` through `Scripts/test.sh`. Tests use task overrides,
+Routine tests run with `AGENTBAR_SUPPRESS_TEST_KEYCHAIN_ACCESS=1` through `Scripts/test.sh`. Tests use task overrides,
 query construction checks, source audits, and store doubles. No test source except the audit itself may contain a
 direct Security item API call, and routine verification must not query the real Keychain, import browser cookies, or
 launch live provider probes.
 
 Relevant implementation files:
 
-- `Sources/CodexBarCore/KeychainSecurity.swift`
-- `Sources/CodexBarCore/KeychainAccessGate.swift`
-- `Sources/CodexBarCore/KeychainNoUIQuery.swift`
-- `Sources/CodexBarCore/BrowserCookieAccessGate.swift`
-- `Sources/CodexBar/Config/CodexBarConfigMigrator.swift`
-- `Sources/CodexBarCore/Providers/Claude/ClaudeOAuth/ClaudeOAuthCredentials.swift`
+- `Sources/AgentBarCore/KeychainSecurity.swift`
+- `Sources/AgentBarCore/KeychainAccessGate.swift`
+- `Sources/AgentBarCore/KeychainNoUIQuery.swift`
+- `Sources/AgentBarCore/BrowserCookieAccessGate.swift`
+- `Sources/AgentBar/Config/AgentBarConfigMigrator.swift`
+- `Sources/AgentBarCore/Providers/Claude/ClaudeOAuth/ClaudeOAuthCredentials.swift`

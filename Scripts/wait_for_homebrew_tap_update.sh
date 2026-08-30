@@ -202,14 +202,14 @@ verify_tap_contents() {
           linux-x86_64
         do
           if ! grep -Fq \
-            "releases/download/v#{version}/CodexBarCLI-v#{version}-${asset}.tar.gz" \
+            "releases/download/v#{version}/AgentBarCLI-v#{version}-${asset}.tar.gz" \
             "$formula_file"
           then
             content_matches=false
           fi
         done
         if ! grep -Fq \
-          'releases/download/v#{version}/CodexBar-macos-universal-#{version}.zip' \
+          'releases/download/v#{version}/AgentBar-macos-universal-#{version}.zip' \
           "$cask_file"
         then
           content_matches=false

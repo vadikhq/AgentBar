@@ -8,7 +8,7 @@ read_when:
 
 # Perplexity Provider
 
-CodexBar reads Perplexity account credit data with a Perplexity web session cookie. It does not use a Perplexity API
+AgentBar reads Perplexity account credit data with a Perplexity web session cookie. It does not use a Perplexity API
 key and does not support token-cost history.
 
 ## Setup
@@ -35,7 +35,7 @@ export PERPLEXITY_COOKIE="__Secure-next-auth.session-token=..."
 
 ## Data Source
 
-CodexBar requests:
+AgentBar requests:
 
 - `GET https://www.perplexity.ai/rest/billing/credits?version=2.18&source=default`
 
@@ -57,14 +57,14 @@ Purchased credits do not reset, so the menu displays that balance without a rese
 ## CLI Usage
 
 ```bash
-codexbar usage --provider perplexity --verbose
+agentbar usage --provider perplexity --verbose
 ```
 
 ## Troubleshooting
 
 ### "Perplexity session token is missing"
 
-Sign in to [perplexity.ai](https://www.perplexity.ai/) and refresh CodexBar, or paste a fresh cookie/session token in
+Sign in to [perplexity.ai](https://www.perplexity.ai/) and refresh AgentBar, or paste a fresh cookie/session token in
 manual mode.
 
 ### "Perplexity session token is invalid or expired"
@@ -78,8 +78,8 @@ account has visible credit data.
 
 ## Related Files
 
-- `Sources/CodexBarCore/Providers/Perplexity/PerplexityProviderDescriptor.swift`
-- `Sources/CodexBarCore/Providers/Perplexity/PerplexityUsageFetcher.swift`
-- `Sources/CodexBarCore/Providers/Perplexity/PerplexityUsageSnapshot.swift`
-- `Sources/CodexBarCore/Providers/Perplexity/PerplexityCookieHeader.swift`
-- `Sources/CodexBar/Providers/Perplexity/PerplexityProviderImplementation.swift`
+- `Sources/AgentBarCore/Providers/Perplexity/PerplexityProviderDescriptor.swift`
+- `Sources/AgentBarCore/Providers/Perplexity/PerplexityUsageFetcher.swift`
+- `Sources/AgentBarCore/Providers/Perplexity/PerplexityUsageSnapshot.swift`
+- `Sources/AgentBarCore/Providers/Perplexity/PerplexityCookieHeader.swift`
+- `Sources/AgentBar/Providers/Perplexity/PerplexityProviderImplementation.swift`

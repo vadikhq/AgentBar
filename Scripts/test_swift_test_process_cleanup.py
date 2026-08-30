@@ -107,7 +107,7 @@ def fixture(mode, directory, ready_delay=0):
 
 class ProcessCleanupTests(unittest.TestCase):
     def exercise(self, mode, expected, interrupt=False, ready_delay=0):
-        with tempfile.TemporaryDirectory(prefix="codexbar-process-cleanup-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-process-cleanup-") as directory:
             root = Path(directory)
             child_root = root / "child"
             sentinel_root = root / "sentinel"
@@ -224,7 +224,7 @@ class ProcessCleanupTests(unittest.TestCase):
 
 class FixtureReadinessTests(unittest.TestCase):
     def test_delayed_startup_releases_observed_ancestry_within_two_seconds(self):
-        with tempfile.TemporaryDirectory(prefix="codexbar-fixture-readiness-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-fixture-readiness-") as directory:
             root = Path(directory)
             child = runner.TestProcess(20, 10, 20, (101, 0))
             clock = [0.0]
@@ -459,7 +459,7 @@ class DarwinNativeSignalTests(unittest.TestCase):
         self.assertEqual(ctypes.sizeof(runner.AuditToken), 32)
         native = runner._proc_signal_with_audittoken
         self.assertIsNotNone(native, "native signal API must be available on supported macOS")
-        with tempfile.TemporaryDirectory(prefix="codexbar-audit-signal-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-audit-signal-") as directory:
             root = Path(directory)
             processes = []
             def start(name, mode):
@@ -742,7 +742,7 @@ class ReviewRegressionTests(unittest.TestCase):
                         runner.test_process(123)
 
     def exercise_initialization_failure(self, failure):
-        with tempfile.TemporaryDirectory(prefix="codexbar-init-cleanup-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-init-cleanup-") as directory:
             root = Path(directory)
             spawned = []
             original_spawn = subprocess.Popen
@@ -940,7 +940,7 @@ class AnchorSemanticsTests(unittest.TestCase):
                 runner.stop_unreaped_child(process)
 
     def test_waitid_observes_exit_repeatedly_without_reaping_session_anchor(self):
-        with tempfile.TemporaryDirectory(prefix="codexbar-waitid-anchor-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-waitid-anchor-") as directory:
             root = Path(directory)
             process = subprocess.Popen([sys.executable, __file__, "--fixture", "success", directory],
                                        start_new_session=True)
@@ -1040,7 +1040,7 @@ class SessionOwnershipTests(unittest.TestCase):
 @unittest.skipUnless(sys.platform.startswith("linux"), "requires Linux /proc and pthread_exit semantics")
 class LinuxThreadGroupTests(unittest.TestCase):
     def test_native_zombie_leader_with_live_worker_is_killed_and_reaped(self):
-        with tempfile.TemporaryDirectory(prefix="codexbar-linux-thread-group-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agentbar-linux-thread-group-") as directory:
             root = Path(directory)
             source = root / "thread.c"
             binary = root / "thread"

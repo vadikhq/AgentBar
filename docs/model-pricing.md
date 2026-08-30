@@ -9,13 +9,13 @@ read_when:
 
 # Model pricing metadata
 
-CodexBar uses models.dev as an additive pricing source alongside bundled fallback rates.
+AgentBar uses models.dev as an additive pricing source alongside bundled fallback rates.
 
 ## Source and cache
 
 - Source API: `https://models.dev/api.json`
 - No API key is required.
-- Local cache: `~/Library/Caches/CodexBar/model-pricing/models-dev-v1.json`
+- Local cache: `~/Library/Caches/AgentBar/model-pricing/models-dev-v1.json`
 - TTL: 24 hours
 
 The pipeline lets future scanner code read the last valid cache synchronously with `ModelsDevPricingPipeline.lookup` and refresh stale metadata separately with `ModelsDevPricingPipeline.refreshIfNeeded`. If a refresh fails, the last valid cache remains usable.
@@ -35,21 +35,21 @@ Local cost scanners preserve that scope when selecting a catalog:
 
 ## Units
 
-models.dev publishes costs as USD per 1M tokens. CodexBar converts those to USD per token in the metadata layer:
+models.dev publishes costs as USD per 1M tokens. AgentBar converts those to USD per token in the metadata layer:
 
 ```text
 perToken = modelsDevCost / 1_000_000
 ```
 
-When models.dev includes `cost.context_over_200k`, CodexBar parses those values as the above-200k-token pricing lane and converts them with the same per-1M-token rule.
+When models.dev includes `cost.context_over_200k`, AgentBar parses those values as the above-200k-token pricing lane and converts them with the same per-1M-token rule.
 
 ## Custom pricing overlay
 
 Exact-match list-price overrides live in the platform Application Support directory:
 
 ```text
-macOS: ~/Library/Application Support/CodexBar/custom-pricing.json
-Linux: ${XDG_DATA_HOME:-~/.local/share}/CodexBar/custom-pricing.json
+macOS: ~/Library/Application Support/AgentBar/custom-pricing.json
+Linux: ${XDG_DATA_HOME:-~/.local/share}/AgentBar/custom-pricing.json
 ```
 
 The Linux CLI uses `FileManager`’s Application Support directory (XDG data home), not `~/.config`. Putting the file only under XDG config will be ignored.
@@ -78,7 +78,7 @@ Keys are case-insensitive and may be a bare model id (`gpt-5.4`) or `provider/mo
 Field rules:
 
 - `0` is a free rate for that token class.
-- A missing field stays unknown. CodexBar does not fill it from models.dev or bundled tables, so a partial overlay row is unpriced rather than a mix of overlay and catalog rates.
+- A missing field stays unknown. AgentBar does not fill it from models.dev or bundled tables, so a partial overlay row is unpriced rather than a mix of overlay and catalog rates.
 - Negative and non-finite numbers are ignored.
 - Alternate spellings `cache_read`, `cache_write`, `cacheCreation`, and `cache_creation` are accepted for cache fields.
 

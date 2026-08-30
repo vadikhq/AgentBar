@@ -1,10 +1,9 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  # Personal fork: auto-trigger on push/PR disabled to avoid unattended CI runs.
+  # Re-enable push/pull_request blocks below if you want CI back.
+  workflow_dispatch: {}
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -160,11 +159,11 @@ jobs:
         # Keep small batches to reduce SwiftPM process overhead without returning to one aggregate run.
         timeout-minutes: 50
         run: |
-          CODEXBAR_TEST_GROUP_SIZE=4 \
-            CODEXBAR_TEST_SUITE_TIMEOUT=120 \
-            CODEXBAR_TEST_RETRY_NON_TIMEOUT_FAILURES=0 \
-            CODEXBAR_TEST_SHARD_INDEX=${{ matrix.shard-index }} \
-            CODEXBAR_TEST_SHARD_COUNT=${{ matrix.shard-count }} \
+          AGENTBAR_TEST_GROUP_SIZE=4 \
+            AGENTBAR_TEST_SUITE_TIMEOUT=120 \
+            AGENTBAR_TEST_RETRY_NON_TIMEOUT_FAILURES=0 \
+            AGENTBAR_TEST_SHARD_INDEX=${{ matrix.shard-index }} \
+            AGENTBAR_TEST_SHARD_COUNT=${{ matrix.shard-count }} \
             ./Scripts/test.sh
 
       - name: Provider plugin engine A/B goldens
@@ -436,11 +435,11 @@ jobs:
             -o "$sqlite_out/build/sqlite3.o"
           llvm-ar crs "$sqlite_out/lib/libsqlite3.a" "$sqlite_out/build/sqlite3.o"
 
-          echo "CODEXBAR_SQLITE3_LIB_DIR=$sqlite_out/lib" >> "$GITHUB_ENV"
+          echo "AGENTBAR_SQLITE3_LIB_DIR=$sqlite_out/lib" >> "$GITHUB_ENV"
 
-      - name: Build CodexBarCLI (release, Linux musl x86_64)
+      - name: Build AgentBarCLI (release, Linux musl x86_64)
         run: >-
-          swift build -c release --product CodexBarCLI
+          swift build -c release --product AgentBarCLI
           --swift-sdk "$SWIFT_STATIC_LINUX_SDK"
           --triple "$SWIFT_STATIC_LINUX_SDK_TRIPLE"
 
@@ -524,26 +523,26 @@ jobs:
           hash -r
           swift --version
 
-      - name: Build CodexBarCLI (release, static Swift stdlib)
-        run: swift build -c release --product CodexBarCLI --static-swift-stdlib
+      - name: Build AgentBarCLI (release, static Swift stdlib)
+        run: swift build -c release --product AgentBarCLI --static-swift-stdlib
 
       - name: Swift Test (Linux only)
         run: swift test --parallel
 
-      - name: Smoke test CodexBarCLI
+      - name: Smoke test AgentBarCLI
         shell: bash
         run: |
           set -euo pipefail
-          BIN_DIR="$(swift build -c release --product CodexBarCLI --static-swift-stdlib --show-bin-path)"
-          BIN="$BIN_DIR/CodexBarCLI"
+          BIN_DIR="$(swift build -c release --product AgentBarCLI --static-swift-stdlib --show-bin-path)"
+          BIN="$BIN_DIR/AgentBarCLI"
           "$BIN" --help >/dev/null
           "$BIN" --version >/dev/null
           if "$BIN" usage --provider codex --web >/dev/null 2>&1; then
             echo "Expected --web to fail on Linux"
             exit 1
           fi
-          "$BIN" usage --provider codex --web 2>&1 | tee /tmp/codexbarcli-stderr.txt >/dev/null || true
-          grep -q "macOS" /tmp/codexbarcli-stderr.txt
+          "$BIN" usage --provider codex --web 2>&1 | tee /tmp/agentbarcli-stderr.txt >/dev/null || true
+          grep -q "macOS" /tmp/agentbarcli-stderr.txt
 
       - name: Summarize Linux CLI build
         if: ${{ always() }}

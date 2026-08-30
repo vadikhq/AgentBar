@@ -1,18 +1,18 @@
 ---
 summary: "Authoring, installing, approving, and operating local JavaScript and TypeScript provider plugins."
 read_when:
-  - Writing a CodexBar provider plugin
+  - Writing a AgentBar provider plugin
   - Installing or reviewing a local provider plugin
   - Debugging plugin approval, TypeScript, settings, or network behavior
 ---
 
 # Local provider plugins
 
-CodexBar can load one local JavaScript or TypeScript file as a provider. Put a `.js` or `.ts` file in
-`~/.config/codexbar/providers/`, or choose **Settings → Plugins → Install…**. Each file declares its complete authority
-and settings schema in a manifest, fetches through CodexBar's sandboxed host API, and returns a generic usage snapshot.
+AgentBar can load one local JavaScript or TypeScript file as a provider. Put a `.js` or `.ts` file in
+`~/.config/agentbar/providers/`, or choose **Settings → Plugins → Install…**. Each file declares its complete authority
+and settings schema in a manifest, fetches through AgentBar's sandboxed host API, and returns a generic usage snapshot.
 
-Plugins are local files only. CodexBar has no plugin catalog, does not download plugin code or assets, and does not
+Plugins are local files only. AgentBar has no plugin catalog, does not download plugin code or assets, and does not
 resolve imports. A plugin cannot use Node, browser globals, subprocesses, local files, databases, OAuth, WebViews, or
 arbitrary native APIs. The maximum source size is 1 MiB.
 
@@ -81,12 +81,12 @@ auth: { type: "authorization-scheme", scheme: "Token", secret: "API_KEY" }
 The host owns the authentication header; plugin request options cannot override it. Authenticated public origins must be
 HTTPS; authenticated private-network HTTP requires `https-or-private-network-http` plus typed approval. Secure settings
 can be overridden for CLI use with
-`CODEXBAR_PLUGIN_<PLUGIN_ID>_<SETTING_KEY>`, uppercased with non-alphanumeric characters replaced by underscores. For
-example, `acme-usage` and `API_KEY` use `CODEXBAR_PLUGIN_ACME_USAGE_API_KEY`.
+`AGENTBAR_PLUGIN_<PLUGIN_ID>_<SETTING_KEY>`, uppercased with non-alphanumeric characters replaced by underscores. For
+example, `acme-usage` and `API_KEY` use `AGENTBAR_PLUGIN_ACME_USAGE_API_KEY`.
 
 ## `ctx` API
 
-`ctx` exists only during `fetchUsage`. CodexBar uses QuickJS on every platform; both QuickJS and the Apple-only
+`ctx` exists only during `fetchUsage`. AgentBar uses QuickJS on every platform; both QuickJS and the Apple-only
 JavaScriptCore rollback engine provide ECMAScript built-ins but no browser or Node environment. `Intl` is
 engine-dependent and unavailable in QuickJS,
 so portable third-party plugins must use the host helpers below instead of ECMA-402. `fetch`, `XMLHttpRequest`, timers,
@@ -149,12 +149,12 @@ Declaring `http-status` changes the approval binding, so an installed plugin req
 
 Bundled first-party providers that have cut over to JavaScript use the shared runtime's 20-second hung-script watchdog.
 A timeout fails that refresh and discards the poisoned worker so the next refresh starts with a fresh context; this is
-production-default and does not depend on `CODEXBAR_JS_PROVIDERS`.
+production-default and does not depend on `AGENTBAR_JS_PROVIDERS`.
 QuickJS enforces the watchdog in-engine with `JS_SetInterruptHandler`, caps the runtime heap at 64 MiB, and caps the
 JavaScript stack at 2 MiB. The interrupt terminates evaluation on its confined thread; timed-out scripts do not leave an
-abandoned evaluation thread behind. On Apple platforms, `CODEXBAR_PLUGIN_ENGINE=jsc` selects the JavaScriptCore rollback
+abandoned evaluation thread behind. On Apple platforms, `AGENTBAR_PLUGIN_ENGINE=jsc` selects the JavaScriptCore rollback
 engine; the same rollback is available in **Settings → Debug → Provider Plugins** and takes effect after restarting
-CodexBar. JavaScriptCore has no public interrupt API, so a timed-out rollback-engine context is discarded but its
+AgentBar. JavaScriptCore has no public interrupt API, so a timed-out rollback-engine context is discarded but its
 abandoned evaluation thread can remain alive until process exit.
 
 ## Snapshot result
@@ -194,7 +194,7 @@ or metadata such as confidence and subscription dates without displayable usage 
 
 ## TypeScript
 
-[`codexbar-plugin.d.ts`](../Sources/CodexBarCore/Resources/Plugins/codexbar-plugin.d.ts) is the canonical authoring
+[`agentbar-plugin.d.ts`](../Sources/AgentBarCore/Resources/Plugins/agentbar-plugin.d.ts) is the canonical authoring
 contract for `defineProvider`, the `ctx` host API, manifests, and usage snapshots. Bundled plugins may use that contract
 directly as `.ts` sources. `Scripts/regenerate-plugin-js.sh` transpiles them with the vendored Sucrase build into
 committed sibling `.js` files; the runtime continues to load only those JavaScript files, so bundled TypeScript has no
@@ -206,19 +206,19 @@ edit a generated sibling `.js` file directly.
 TypeScript files are transpiled by the selected plugin engine with the bundled Sucrase 3.35.1 build using its
 `typescript` transform. Use ordinary
 type syntax but no module imports, JSX, decorators, or runtime TypeScript features that require module resolution.
-Transpiled output is cached in `~/Library/Caches/CodexBar/plugins/` under a filename containing the SHA-256 of the source
+Transpiled output is cached in `~/Library/Caches/AgentBar/plugins/` under a filename containing the SHA-256 of the source
 and the Sucrase version. An unchanged file is a cache hit; any source or compiler-version change produces a new key.
 Transpile failures appear as that plugin's Settings error.
 
 ## Install, approve, run, and delete
 
 1. Open **Settings → Plugins** and choose **Install…**, or copy one `.js`/`.ts` file into the providers directory.
-2. CodexBar validates the source and manifest without network, file, cookie, or secret capabilities.
+2. AgentBar validates the source and manifest without network, file, cookie, or secret capabilities.
 3. The approval sheet lists exact normalized origins, auth mode, capabilities, secure setting names, and cookie domains.
 4. For loopback, IP-literal, or `.local` origins, type every normalized origin exactly before approval.
 5. Enter manifest settings and enable the plugin. Its refresh result appears in its generic menu card.
 
-Approval records live outside plugin files under `~/Library/Application Support/CodexBar/plugin-approvals.json`. A
+Approval records live outside plugin files under `~/Library/Application Support/AgentBar/plugin-approvals.json`. A
 change to instance ID, normalized origins, auth mode/header, secure setting names, capabilities, or cookie domains
 invalidates approval before the next request. There is no bulk approval or import path.
 
@@ -226,11 +226,11 @@ Bundled first-party plugins do not use the interactive plugin-approval flow. The
 accepted for bundled code only for LLM Proxy and LiteLLM, whose existing Swift providers already permit exactly those
 targets. Other bundled providers fail manifest validation if they request that policy.
 
-`codexbar plugins list` shows locally discovered plugins. `codexbar plugins fetch <id>` displays the same approval
+`agentbar plugins list` shows locally discovered plugins. `agentbar plugins fetch <id>` displays the same approval
 fields and can approve only from an interactive terminal; redirected/headless input fails closed. Browser-cookie plugins
 are app-only and fail closed in the CLI.
 
-Delete from Settings with **Delete…**. CodexBar removes the plugin file, matching TypeScript cache output, approval,
+Delete from Settings with **Delete…**. AgentBar removes the plugin file, matching TypeScript cache output, approval,
 per-instance settings and secrets, and per-instance usage history. Invalid plugin files are listed with their validation
 error and can also be deleted.
 
@@ -238,7 +238,7 @@ error and can also be deleted.
 
 Treat a plugin like code you run locally, even though its host capabilities are narrow. Read the manifest and source,
 verify every origin, and avoid installing files from untrusted repositories. Approval grants the listed origin network
-authority; DNS changes after approval are outside CodexBar's threat model. Secrets are never placed in URLs or logged,
+authority; DNS changes after approval are outside AgentBar's threat model. Secrets are never placed in URLs or logged,
 redirects cannot forward authentication, and undeclared settings/cookies/origins fail closed.
 
 Plugins support the macOS app plus the macOS and Linux CLIs. They are excluded from widgets and all built-in-provider-only

@@ -10,14 +10,14 @@ read_when:
 # Antigravity provider
 
 For Google individual, AI Pro, and Ultra accounts blocked by the June 2026 Gemini CLI OAuth
-shutdown, Antigravity is the replacement path for Gemini quota tracking in CodexBar. Launch
+shutdown, Antigravity is the replacement path for Gemini quota tracking in AgentBar. Launch
 the Antigravity app or run `agy`, sign in, then refresh. See `docs/gemini.md` for the Gemini
-provider migration notes. CodexBar offers the handoff only after an observed Google migration
+provider migration notes. AgentBar offers the handoff only after an observed Google migration
 signal and never enables or falls back to Antigravity automatically.
 
 To use the `agy` CLI source without keeping the desktop app open, install the CLI first
 (`brew install --cask antigravity-cli`; use `ANTIGRAVITY_CLI_PATH` when it is not on PATH), then
-run `agy` once and sign in. CodexBar keeps the signed-in `agy` local HTTPS server alive briefly
+run `agy` once and sign in. AgentBar keeps the signed-in `agy` local HTTPS server alive briefly
 after each refresh and stops it when idle, or reuses a signed-in `agy` you already have running
 without taking ownership of that process.
 
@@ -31,14 +31,14 @@ Antigravity supports four usage data sources:
 ## When the Antigravity app is closed
 
 The app-local `language_server` exists only while Antigravity.app is running. With the app closed,
-CodexBar relies on the `agy` CLI HTTPS source or the Google OAuth fallback. Without a signed-in
+AgentBar relies on the `agy` CLI HTTPS source or the Google OAuth fallback. Without a signed-in
 `agy`, the OAuth fallback can only prove model availability, so the menu shows an all-100%
 placeholder instead of real quota numbers. A freshly spawned `agy` needs a few seconds for macOS
 keyring authentication before its quota endpoints answer, so the first refresh after a cold start
-can take a few extra seconds while CodexBar waits for readiness; later refreshes reuse the warmed session.
+can take a few extra seconds while AgentBar waits for readiness; later refreshes reuse the warmed session.
 
 The local and CLI paths both prefer Antigravity's internal `RetrieveUserQuotaSummary` quota payload and may fall back to
-`GetUserStatus`, then `GetCommandModelConfigs`; CodexBar never scrapes the desktop UI or the `agy` TUI.
+`GetUserStatus`, then `GetCommandModelConfigs`; AgentBar never scrapes the desktop UI or the `agy` TUI.
 
 As of Antigravity 2.x, the Antigravity app and `agy` CLI payloads can be richer than Google OAuth and IDE payloads.
 `RetrieveUserQuotaSummary` exposes the same two groups shown by Antigravity's Model Quota UI:
@@ -51,24 +51,24 @@ Current Antigravity IDE local endpoints return `GetUserStatus`, `GetAvailableMod
 with five-hour/session reset data, but not the app/CLI `RetrieveUserQuotaSummary` weekly/session grouping. OAuth
 payloads can be less complete and may only prove model availability. Treat `auto` as the authoritative user-facing mode:
 it accepts the first account-matching source in Antigravity app -> `agy` CLI -> Antigravity IDE order, and adds OAuth
-when CodexBar has a selected/injected Google account or an existing shared credentials file. An all-100%
+when AgentBar has a selected/injected Google account or an existing shared credentials file. An all-100%
 `fetchAvailableModels` payload is only accepted after `retrieveUserQuota` echoes bucket fractions; this can be an
 availability-style fallback rather than the full Antigravity quota summary.
-When OAuth identifies the account but quota endpoints deny access, CodexBar shows `Limits not available` instead of an
+When OAuth identifies the account but quota endpoints deny access, AgentBar shows `Limits not available` instead of an
 empty quota card.
 
 ## OAuth account switching
 
 - Login still uses Antigravity's Google OAuth client, discovered from `Antigravity.app` or overridden with `ANTIGRAVITY_OAUTH_CLIENT_ID` and `ANTIGRAVITY_OAUTH_CLIENT_SECRET`.
-- A successful login writes the latest shared credentials to `~/.codexbar/antigravity/oauth_creds.json` and upserts a token-account entry for the Google account.
+- A successful login writes the latest shared credentials to `~/.agentbar/antigravity/oauth_creds.json` and upserts a token-account entry for the Google account.
 - Each token-account entry stores serialized `AntigravityOAuthCredentials` and is injected into remote fetches through `ANTIGRAVITY_OAUTH_CREDENTIALS_JSON`.
 - When a token account is selected, the OAuth fetcher uses that account before falling back to the shared credentials file.
   In `auto` mode the ambient Antigravity app, `agy` CLI, and IDE probes still run first, but a snapshot whose account
   does not match the selected account is rejected so the pipeline falls through to the account-scoped OAuth fetch (see
   `AntigravitySelectedAccountGuard`). If no account is selected/injected, `auto` includes OAuth only when the legacy
   shared credentials file already exists. Explicit `cli`/`oauth` source modes stay authoritative and are not re-checked.
-- Removing the last saved token account that matches `~/.codexbar/antigravity/oauth_creds.json` deletes that shared file,
-  so a removed CodexBar account does not silently continue refreshing through the legacy shared cache.
+- Removing the last saved token account that matches `~/.agentbar/antigravity/oauth_creds.json` deletes that shared file,
+  so a removed AgentBar account does not silently continue refreshing through the legacy shared cache.
 - The menu action is labeled `Add Account...`; switching between saved accounts scopes Google OAuth fetches.
 
 ## Remote OAuth data sources
@@ -103,7 +103,7 @@ When the Antigravity 2.0 app is running:
        `Antigravity IDE.app/.../extensions/antigravity/bin/` with `--app_data_dir antigravity-ide`; or
      - the **CLI**: an `antigravity-cli` / `antigravity_cli` path segment, or the
        `agy` binary (path-anchored so unrelated arguments/binaries do not match).
-   - CodexBar collects all valid local app language-server candidates and probes each reachable one. If multiple
+   - AgentBar collects all valid local app language-server candidates and probes each reachable one. If multiple
      app processes are open, it prefers the richer quota-summary snapshot over the legacy `GetUserStatus`
      two-pool fallback.
    - Extract CLI flags:
@@ -138,7 +138,7 @@ When the Antigravity 2.0 app is running:
 
 ### 2) `agy` CLI HTTPS source
 
-When source mode is `auto` or `cli` and the desktop local probe fails, CodexBar resolves `agy` via:
+When source mode is `auto` or `cli` and the desktop local probe fails, AgentBar resolves `agy` via:
 
 - `ANTIGRAVITY_CLI_PATH`
 - `PATH` / login-shell path lookup
@@ -147,7 +147,7 @@ When source mode is `auto` or `cli` and the desktop local probe fails, CodexBar 
   - `/opt/homebrew/bin/agy`
   - `/usr/local/bin/agy`
 
-CodexBar launches `agy` in a PTY because the CLI exposes its quota server only while the interactive process is alive.
+AgentBar launches `agy` in a PTY because the CLI exposes its quota server only while the interactive process is alive.
 The implementation still does **not** scrape terminal output; it only keeps the process alive, drains discarded PTY
 rendering, discovers listening ports with `lsof`, and probes the local HTTPS server:
 
@@ -162,25 +162,25 @@ Differences from the desktop local probe:
 - The CLI HTTPS endpoint does **not** require `X-Codeium-Csrf-Token`.
 - Before launching `agy`, both menu-bar refreshes and one-shot CLI invocations spend at most two seconds looking for
   an already-running, same-user `agy` at the selected binary path and reuse its tokenless local HTTPS endpoint when it
-  returns parseable usage for the selected account. CodexBar-owned pids are excluded from external reuse so managed
-  probe/idle lifecycle accounting stays balanced; if no eligible external server answers, CodexBar uses its managed
+  returns parseable usage for the selected account. AgentBar-owned pids are excluded from external reuse so managed
+  probe/idle lifecycle accounting stays balanced; if no eligible external server answers, AgentBar uses its managed
   session as before.
 - On macOS, external reuse matches the selected binary against the kernel executable path, not the spelling of
   `argv[0]`; a bare `agy` command can match, but a conflicting executable cannot. Platforms without that identity
   retain the absolute command-path check. User/account and managed-process exclusions are unchanged.
 - If `agy` is signed out, an unavailable or tokenless IDE fallback keeps the actionable Terminal sign-in guidance.
   A successful fallback still supplies usage, and more specific later errors retain their normal precedence.
-- Readiness is endpoint-based: CodexBar retries until one of the quota endpoints parses, because fresh `agy`
+- Readiness is endpoint-based: AgentBar retries until one of the quota endpoints parses, because fresh `agy`
   processes can bind a port before the quota service is initialized.
 - App runtime uses a bounded warm session: `agy` is kept alive briefly after a refresh, then stopped on idle. CLI runtime
   tears it down immediately after the one-shot fetch.
 - Repeated endpoint failures force a relaunch instead of reusing a wedged process forever.
-- CodexBar records the launched pid + executable identity and conservatively reaps only its own matching stale `agy`
+- AgentBar records the launched pid + executable identity and conservatively reaps only its own matching stale `agy`
   process on the next launch. It never blind-kills a user-launched `agy`.
 
 ### 3) Antigravity IDE local probe
 
-When the Antigravity 2.0 app and `agy` CLI are unavailable, CodexBar probes Antigravity IDE language servers with
+When the Antigravity 2.0 app and `agy` CLI are unavailable, AgentBar probes Antigravity IDE language servers with
 `AntigravityStatusProbe(processScope: .ideOnly)`. Current observed IDE payloads return model-level/session quota data
 through `GetUserStatus`, `GetAvailableModels`, and `GetCascadeModelConfigData`; `RetrieveUserQuotaSummary` returns 404
 from the IDE local server. This means the IDE fallback can show session bars, but should not be expected to provide the
@@ -188,7 +188,7 @@ weekly limit shown by Antigravity 2.0.
 
 ### 4) OAuth remote fallback
 
-When source mode is `auto`, OAuth is used after app, `agy` CLI, and IDE paths fail if CodexBar has a selected/injected
+When source mode is `auto`, OAuth is used after app, `agy` CLI, and IDE paths fail if AgentBar has a selected/injected
 Google account or an existing shared credentials file. The app, `agy` CLI, and IDE probes still run first, but in
 `auto` mode their snapshots are accepted only when the reported account matches the selected account; otherwise the
 pipeline falls through to this account-scoped OAuth fetch. When source mode is `oauth`, only OAuth is used and the
@@ -220,7 +220,7 @@ shared OAuth file can still be used as a fallback credential source.
   - `Claude + GPT` groups Claude text models and GPT/GPT-OSS text models.
 - Representative selection:
   - Hidden model rows such as Lite, autocomplete, and image variants do not drive summary bars.
-  - For each group, CodexBar uses the lowest remaining known quota row and preserves that row's reset metadata.
+  - For each group, AgentBar uses the lowest remaining known quota row and preserves that row's reset metadata.
   - Rows with reset metadata but no remaining fraction stay visible as unavailable reset context only when their group
     has no known usage row.
 - `resetTime` parsing:
@@ -251,7 +251,7 @@ shared OAuth file can still be used as a fallback credential source.
   principle it already applies to cost data. The filter is display-only: the snapshot, CLI output, and menu-bar
   ranking still see every window, and menu-bar selection ranks by highest used, so an untouched family never wins.
 - The dashboard-v1 payload keeps every family for its script clients and marks the lanes of an untouched family with
-  `idle` instead. The `codexbar serve` web UI skips those rows, so the web card matches the menu without repeating
+  `idle` instead. The `agentbar serve` web UI skips those rows, so the web card matches the menu without repeating
   the family rule in JavaScript. See `docs/dashboard-api.md`.
 
 ## Local token history
@@ -264,7 +264,7 @@ Both overrides and `HOME` come from the same refresh environment. Declared roots
 discovery still visits only the immediate entries of the recognized directories. This is machine-local token history,
 not account attribution or dollar pricing. No language server, provider CLI, browser, credentials, or network is used.
 
-Use `codexbar cost --provider antigravity --format json` to read this same local history from the CLI.
+Use `agentbar cost --provider antigravity --format json` to read this same local history from the CLI.
 The cost endpoint and dashboard also include it when Antigravity is selected. Token counts do not imply known dollar
 costs, and these entry points do not expand the supported timestamp layouts described below.
 
@@ -337,7 +337,7 @@ cancellation. The fixtures are synthetic and source-linked, not private captures
 - Local HTTPS uses a self-signed cert; the probe allows insecure TLS only for loopback hosts.
 
 ## Key files
-- `Sources/CodexBarCore/Providers/Antigravity/AntigravityCLISession.swift`
-- `Sources/CodexBarCore/Providers/Antigravity/AntigravityProviderDescriptor.swift`
-- `Sources/CodexBarCore/Providers/Antigravity/AntigravityStatusProbe.swift`
-- `Sources/CodexBar/Providers/Antigravity/AntigravityProviderImplementation.swift`
+- `Sources/AgentBarCore/Providers/Antigravity/AntigravityCLISession.swift`
+- `Sources/AgentBarCore/Providers/Antigravity/AntigravityProviderDescriptor.swift`
+- `Sources/AgentBarCore/Providers/Antigravity/AntigravityStatusProbe.swift`
+- `Sources/AgentBar/Providers/Antigravity/AntigravityProviderImplementation.swift`

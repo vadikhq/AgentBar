@@ -17,7 +17,7 @@ for `.codex` and `.combined`.
 Generate the after proof with:
 
 ```sh
-CODEXBAR_ICON_SCREENSHOT_DIR=docs/screenshots \
+AGENTBAR_ICON_SCREENSHOT_DIR=docs/screenshots \
   swift test --filter IconRendererScreenshotRenderTests
 ```
 

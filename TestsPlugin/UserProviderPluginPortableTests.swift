@@ -1,11 +1,11 @@
 import Foundation
 import Testing
-@testable import CodexBarCore
+@testable import AgentBarCore
 
 struct UserProviderPluginPortableTests {
     @Test
     func `bundled plugins are free of raw Intl references`() throws {
-        let bundle = try #require(CodexBarCoreResources.bundle)
+        let bundle = try #require(AgentBarCoreResources.bundle)
         for name in [
             "crof", "venice", "openrouter", "clawrouter", "deepgram", "sub2api", "synthetic", "openai", "zai",
             "poe", "xai", "manus", "perplexity", "t3chat", "qoder",
@@ -22,7 +22,7 @@ struct UserProviderPluginPortableTests {
 
     @Test
     func `QuickJS executes the bundled Sucrase transform`() throws {
-        let bundle = try #require(CodexBarCoreResources.bundle)
+        let bundle = try #require(AgentBarCoreResources.bundle)
         let resourceURL = try #require(bundle.url(
             forResource: "sucrase-3.35.1.min",
             withExtension: "js"))
@@ -60,7 +60,7 @@ struct UserProviderPluginPortableTests {
     @Test
     func `TypeScript user plugin loads and fetches portably`() async throws {
         let root = FileManager.default.temporaryDirectory
-            .appendingPathComponent("codexbar-plugin-portable-\(UUID().uuidString)")
+            .appendingPathComponent("agentbar-plugin-portable-\(UUID().uuidString)")
         let providers = root.appendingPathComponent("providers")
         let cache = root.appendingPathComponent("cache")
         try FileManager.default.createDirectory(at: providers, withIntermediateDirectories: true)

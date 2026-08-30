@@ -28,7 +28,7 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
    - Reads `email`, `team_id`, `first_name`/`last_name`, plan-hint (`auth_mode`),
      and the optional `principal_type` for the identity row in the menu.
    - Team principals are recognized on the CLI and web billing paths. Until Grok
-     exposes a supported team usage surface, CodexBar keeps the identity row and
+     exposes a supported team usage surface, AgentBar keeps the identity row and
      reports that team usage is unavailable instead of exposing the personal-team
      rejection verbatim.
 2) **`grok agent stdio` ACP JSON-RPC** (best-effort, currently disabled in grok 0.1.210)
@@ -40,7 +40,7 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
      unsupported-team-usage diagnostic. When xAI exposes billing on the agent
      protocol, no code change is required.
    - After a successful RPC billing result (or the identity-only team fallback),
-     CodexBar still GETs `/v1/settings` for `subscription_tier_display` so the
+     AgentBar still GETs `/v1/settings` for `subscription_tier_display` so the
      billed plan is not lost just because the CLI route succeeded first. The
      settings lookup is optional enrichment with a 2-second budget.
    - One non-obvious quirk: grok's ACP parser does not unescape `\/` in method
@@ -60,7 +60,7 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
    - Unknown usage yields no rate window at all, and a successful strategy ends the
      fetch pipeline, so a period-only credits answer would otherwise hide the usage
      bar for plans whose payload never publishes `creditUsagePercent`. Before that
-     answer is accepted, CodexBar retries the grok.com bearer gRPC path (step 4,
+     answer is accepted, AgentBar retries the grok.com bearer gRPC path (step 4,
      still without cookies) and adopts its percent when it has one, keeping the
      credits period and plan metadata, with the proxy's authoritative reset taking
      precedence over a conflicting gRPC timestamp. When grok.com has no percent
@@ -73,7 +73,7 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
      refresh and a grok.com outage must not delay the credits answer already in hand.
    - Plan name does not come from the credits payload. After a successful
      auth-file or SuperGrok OAuth web billing result (CLI-proxy) or the team
-     identity-only path, CodexBar GETs `https://cli-chat-proxy.grok.com/v1/settings`
+     identity-only path, AgentBar GETs `https://cli-chat-proxy.grok.com/v1/settings`
      with the same bearer headers and reads `subscription_tier_display`
      (`SuperGrok Heavy` vs `SuperGrok`). Cookie mode does not call the proxy.
      If the proxy fails, OAuth retries the grok.com bearer gRPC path, still
@@ -89,14 +89,14 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
    - This endpoint now requires the browser-held Web Key Exchange (WKE) keypair.
      Cookie-only authentication can fail with gRPC status 16 and
      `no-credentials`; signing in through Chrome alone cannot provide that proof
-     to CodexBar, so `grok login` is the recommended recovery path.
+     to AgentBar, so `grok login` is the recommended recovery path.
    - Uses grok.com browser session cookies. Successful cookie usage never inherits
      the auth-file account's identity or settings tier.
-   - CodexBar imports Chrome only by default to avoid unrelated browser
+   - AgentBar imports Chrome only by default to avoid unrelated browser
      Keychain prompts.
    - Ordinary CLI/test runtime does not import browser cookies unless
-     `CODEXBAR_ALLOW_BROWSER_COOKIE_IMPORT=1` is set. An explicit
-     `codexbar cookie refresh --provider grok` also opts in for that refresh.
+     `AGENTBAR_ALLOW_BROWSER_COOKIE_IMPORT=1` is set. An explicit
+     `agentbar cookie refresh --provider grok` also opts in for that refresh.
    - Validated sessions are stored in the Keychain-backed cookie cache and are
      reused first by later app and CLI fetches, so background work does not
      re-open the Chromium Keychain gate. The cached cookie is evicted only on
@@ -120,14 +120,14 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
 
 - File: `~/.grok/auth.json` (path overridable via `GROK_HOME`). This remains
   the preferred identity source when `grok login` has written a non-expired token.
-- Top-level keys are OIDC scope URLs. CodexBar prefers entries under
+- Top-level keys are OIDC scope URLs. AgentBar prefers entries under
   `https://auth.x.ai::<client-id>` (SuperGrok), falling back to
   `https://accounts.x.ai/sign-in` (legacy session).
 - Required fields per entry: `key` (bearer token), `refresh_token`, `expires_at`,
   `auth_mode`, `email`, `team_id`, `user_id`, `first_name`/`last_name`.
   `principal_type` is optional because older auth files do not include it.
 - Tokens are issued by `grok login` and expire after ~7 days; refresh is handled by
-  the CLI itself (CodexBar does not refresh; it just reads the cached credential).
+  the CLI itself (AgentBar does not refresh; it just reads the cached credential).
 - If `auth.json` is missing or expired, paste a SuperGrok bearer into Grok token
   accounts or set `GROK_OAUTH_TOKEN`. Cookie-shaped values and `xai-` management
   keys are rejected. The pasted token uses the same CLI-proxy credits URL.
@@ -175,7 +175,7 @@ The grok.com billing gRPC-web endpoint remains a best-effort fallback.
   ```
 - Auth errors surface as JSON-RPC errors with the message
   `"Authentication required to fetch billing data. Run 'grok login' to authenticate."`.
-- Timeouts: 8s for `initialize`, 12s for `x.ai/billing`. CodexBar terminates the
+- Timeouts: 8s for `initialize`, 12s for `x.ai/billing`. AgentBar terminates the
   child `grok` process on timeout to avoid leaking subprocesses.
 
 ## Mapping to `UsageSnapshot`
@@ -215,7 +215,7 @@ Each session directory contains `signals.json` with fields like:
 }
 ```
 
-CodexBar aggregates these into a `GrokLocalSessionSummary` (session count, total
+AgentBar aggregates these into a `GrokLocalSessionSummary` (session count, total
 tokens, last session time, primary model, per-day token buckets) and exposes it for
 diagnostics even when the RPC path is unavailable.
 
@@ -233,13 +233,13 @@ points to `https://status.x.ai`.
 
 ## Key files
 
-- `Sources/CodexBarCore/Providers/Grok/GrokProviderDescriptor.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokAuth.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokPlan.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokRPCClient.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokCreditsProxyFetcher.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokCLISettingsFetcher.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokWebBillingFetcher.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokStatusProbe.swift`
-- `Sources/CodexBarCore/Providers/Grok/GrokLocalSessionScanner.swift`
-- `Sources/CodexBar/Providers/Grok/GrokProviderImplementation.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokProviderDescriptor.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokAuth.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokPlan.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokRPCClient.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokCreditsProxyFetcher.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokCLISettingsFetcher.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokWebBillingFetcher.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokStatusProbe.swift`
+- `Sources/AgentBarCore/Providers/Grok/GrokLocalSessionScanner.swift`
+- `Sources/AgentBar/Providers/Grok/GrokProviderImplementation.swift`

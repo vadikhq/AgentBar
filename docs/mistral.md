@@ -8,7 +8,7 @@ read_when:
 
 # Mistral Provider
 
-CodexBar reads Mistral billing usage with the Mistral web session from `admin.mistral.ai`. It can also fetch credit
+AgentBar reads Mistral billing usage with the Mistral web session from `admin.mistral.ai`. It can also fetch credit
 balance and, when the required CSRF/session cookies are present, best-effort Mistral Vibe monthly-plan usage.
 
 ## Setup
@@ -28,16 +28,16 @@ the documented Mistral domains.
 
 ## Data Sources
 
-CodexBar requests the current UTC month from Mistral Admin:
+AgentBar requests the current UTC month from Mistral Admin:
 
 - `GET https://admin.mistral.ai/api/billing/v2/usage?month=<month>&year=<year>`
 - `GET https://admin.mistral.ai/api/billing/credits` (best-effort credit balance)
 
-When a CSRF token is available, CodexBar also makes a bounded best-effort request for Mistral Vibe plan usage:
+When a CSRF token is available, AgentBar also makes a bounded best-effort request for Mistral Vibe plan usage:
 
 - `GET https://console.mistral.ai/api-ui/trpc/billing.vibeUsage?...`
 
-For the console request, CodexBar forwards only the `csrftoken` and `ory_session_*` cookies. Other
+For the console request, AgentBar forwards only the `csrftoken` and `ory_session_*` cookies. Other
 `admin.mistral.ai` cookies stay origin-bound.
 
 ## Display
@@ -52,7 +52,7 @@ For the console request, CodexBar forwards only the `csrftoken` and `ory_session
 ## CLI Usage
 
 ```bash
-codexbar usage --provider mistral --verbose
+agentbar usage --provider mistral --verbose
 ```
 
 ## Troubleshooting
@@ -69,12 +69,12 @@ In manual mode, paste a full `Cookie:` header from an `admin.mistral.ai` request
 ### Credits or Vibe plan usage are missing
 
 The billing usage request is required. Credits and Vibe usage are best-effort; if either optional endpoint fails or
-does not expose data for the account, CodexBar keeps the main Mistral usage result.
+does not expose data for the account, AgentBar keeps the main Mistral usage result.
 
 ## Related Files
 
-- `Sources/CodexBarCore/Providers/Mistral/MistralProviderDescriptor.swift`
-- `Sources/CodexBarCore/Providers/Mistral/MistralUsageFetcher.swift`
-- `Sources/CodexBarCore/Providers/Mistral/MistralModels.swift`
-- `Sources/CodexBarCore/Providers/Mistral/MistralCookieImporter.swift`
-- `Sources/CodexBar/Providers/Mistral/MistralProviderImplementation.swift`
+- `Sources/AgentBarCore/Providers/Mistral/MistralProviderDescriptor.swift`
+- `Sources/AgentBarCore/Providers/Mistral/MistralUsageFetcher.swift`
+- `Sources/AgentBarCore/Providers/Mistral/MistralModels.swift`
+- `Sources/AgentBarCore/Providers/Mistral/MistralCookieImporter.swift`
+- `Sources/AgentBar/Providers/Mistral/MistralProviderImplementation.swift`

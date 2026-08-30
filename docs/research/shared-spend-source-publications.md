@@ -4,7 +4,7 @@ Research date: 2026-08-18
 
 ## Decision
 
-CodexBar should expose one app-scoped, main-actor publication of immutable spend-source inputs and states. Async producers refresh that publication outside the menu-rendering path. The Overview menu and Usage & Spend dashboard synchronously project the same publication at different densities.
+AgentBar should expose one app-scoped, main-actor publication of immutable spend-source inputs and states. Async producers refresh that publication outside the menu-rendering path. The Overview menu and Usage & Spend dashboard synchronously project the same publication at different densities.
 
 The publication must preserve source identity and truth state:
 
@@ -19,7 +19,7 @@ Independent dashboard scans also capture the regular token publication revision 
 
 This fixes an independently reproduced dashboard freshness gap investigated alongside #3209 and #3176. The screenshot in #3209 is the regular provider-menu cost chart and submenu; its Claude root cause remains unproved. This dashboard fix does not establish a resolution of that report, #3194's Codex quota/persistence issue, or #3207's separate scanner fairness work.
 
-## Why this fits CodexBar
+## Why this fits AgentBar
 
 The existing implementation already contains most of the required primitives:
 

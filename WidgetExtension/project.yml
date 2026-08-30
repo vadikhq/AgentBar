@@ -1,31 +1,31 @@
-name: CodexBarWidgetExtension
+name: AgentBarWidgetExtension
 options:
   deploymentTarget:
     macOS: "14.0"
 packages:
-  CodexBar:
+  AgentBar:
     path: ..
 targets:
-  CodexBarWidgetExtension:
+  AgentBarWidgetExtension:
     type: app-extension
     platform: macOS
     deploymentTarget: "14.0"
     sources:
-      - path: ../Sources/CodexBarWidget
+      - path: ../Sources/AgentBarWidget
     dependencies:
-      - package: CodexBar
-        product: CodexBarCore
+      - package: AgentBar
+        product: AgentBarCore
       - sdk: SwiftUI.framework
       - sdk: WidgetKit.framework
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: CodexBar
-        CFBundleName: CodexBarWidget
+        CFBundleDisplayName: AgentBar
+        CFBundleName: AgentBarWidget
         CFBundlePackageType: XPC!
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
-        CodexBarTeamID: "$(CODEXBAR_TEAM_ID)"
+        AgentBarTeamID: "$(AGENTBAR_TEAM_ID)"
         LSMinimumSystemVersion: "14.0"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
@@ -35,8 +35,8 @@ targets:
         CODE_SIGNING_ALLOWED: false
         ENABLE_DEBUG_DYLIB: false
         ENABLE_APP_SANDBOX: true
-        INFOPLIST_KEY_CodexBarTeamID: "$(CODEXBAR_TEAM_ID)"
+        INFOPLIST_KEY_AgentBarTeamID: "$(AGENTBAR_TEAM_ID)"
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks"
-        PRODUCT_BUNDLE_IDENTIFIER: "$(CODEXBAR_WIDGET_BUNDLE_ID)"
-        PRODUCT_NAME: CodexBarWidget
+        PRODUCT_BUNDLE_IDENTIFIER: "$(AGENTBAR_WIDGET_BUNDLE_ID)"
+        PRODUCT_NAME: AgentBarWidget
         SWIFT_VERSION: "6.0"

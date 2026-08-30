@@ -16,7 +16,7 @@ is inherently a user-chosen origin (LLM Proxy and LiteLLM) do not qualify. The c
 current Swift request methods and snapshot projections; Azure OpenAI, StepFun, and Warp were removed from the audit's
 earlier “fully expressible” baseline because their current implementations issue POST requests.
 
-`converted` means the bundled JavaScript conversion is present behind `CODEXBAR_JS_PROVIDERS=1`. `cut-over` means the
+`converted` means the bundled JavaScript conversion is present behind `AGENTBAR_JS_PROVIDERS=1`. `cut-over` means the
 bundled script is the only JavaScriptCore implementation, with any retained native core serving Linux only. The Converted column
 makes implementation state explicit and the totals are mutually exclusive: `convertible-now` counts only providers
 that remain cheap to convert. Remaining buckets name the next blocker after this host-extension slice.

@@ -22,16 +22,16 @@ Cursor.app session and falls back to cookies when the app token is missing, expi
      - macOS main DB: `~/Library/Application Support/Cursor/User/globalStorage/state.vscdb`
      - Active WAL sidecars when present: `state.vscdb-wal` and `state.vscdb-shm`
    - The database is opened read-only. Active WAL state is read normally; an idle WAL-mode main file with no
-     sidecars uses SQLite immutable mode so CodexBar does not recreate files in Cursor's directory.
-   - The token is used only while its JWT expiry is more than 60 seconds away. CodexBar never refreshes it.
+     sidecars uses SQLite immutable mode so AgentBar does not recreate files in Cursor's directory.
+   - The token is used only while its JWT expiry is more than 60 seconds away. AgentBar never refreshes it.
    - A validated derived session is also persisted owner-only at
-     `~/Library/Application Support/CodexBar/cursor-session.json` through the standard credential-file writer.
-   - When an already-cached cookie exposes a different email or subject, CodexBar logs the mismatch and keeps the
+     `~/Library/Application Support/AgentBar/cursor-session.json` through the standard credential-file writer.
+   - When an already-cached cookie exposes a different email or subject, AgentBar logs the mismatch and keeps the
      chosen Cursor.app identity on the usage snapshot/card. It does not combine app usage with browser identity.
 
 2) **Cached cookie header**
    - Stored after successful browser import.
-   - Keychain cache: `com.steipete.codexbar.cache` (account `cookie.cursor`).
+   - Keychain cache: `com.vadikhq.agentbar.cache` (account `cookie.cursor`).
 
 3) **Browser cookie import**
    - Cookie order from provider metadata (default: Safari → Chrome → Firefox).
@@ -42,11 +42,11 @@ Cursor.app session and falls back to cookies when the app token is missing, expi
      - `next-auth.session-token`
 
 4) **Stored session cookies** (fallback)
-   - Legacy sessions captured by older CodexBar releases remain readable.
-   - Stored at: `~/Library/Application Support/CodexBar/cursor-session.json`.
+   - Legacy sessions captured by older AgentBar releases remain readable.
+   - Stored at: `~/Library/Application Support/AgentBar/cursor-session.json`.
 
 On macOS, explicit `--source web` skips Cursor.app local auth and uses only the cookie ladder. A configured Manual cookie
-header remains an explicit override. `codexbar usage --provider cursor --source auto --verbose` prints the selected
+header remains an explicit override. `agentbar usage --provider cursor --source auto --verbose` prints the selected
 automatic path and is the quickest live-read check after Cursor login.
 
 Manual option:
@@ -56,11 +56,11 @@ Manual option:
 ## Add and switch account
 - **Add Account** opens `https://authenticator.cursor.sh/` in a supported browser.
 - **Switch Account** opens the same authenticator and waits for a different stable account ID when available, falling back to normalized email when IDs are unavailable.
-- When the system's HTTPS handler is a supported browser, CodexBar opens the route there automatically. When the handler is an intermediary app, CodexBar asks the user to choose a concrete supported browser before opening the route.
-- CodexBar pins the original HTTPS route to that concrete browser and polls cookies only from the same application. Interactive login never falls back to another browser, a stored session, or Cursor.app; cancelling browser selection or the absence of a supported browser stops before login opens.
-- An installed non-Safari browser remains eligible before its first profile or cookie database exists, and CodexBar detects the store created during login. Browsers with access-blocked profile data remain unavailable, while Safari still requires an existing readable cookie source.
-- CodexBar preserves its cached and legacy stored Cursor sessions while login is in progress. An accepted browser session must be durably cached before the legacy session is cleared, so cancellation or failure leaves the previous session intact. Add completes only after the authenticated response includes a Cursor account identity. Switch compares stable account IDs when both sides provide them and otherwise compares normalized email.
-- CodexBar checks all available profiles in the selected browser. Add accepts a sole unambiguous account automatically, while Switch always asks for confirmation before replacing the current account, even when only one eligible alternative is found. Multiple eligible accounts always require an explicit choice, and CodexBar caches only the chosen session.
+- When the system's HTTPS handler is a supported browser, AgentBar opens the route there automatically. When the handler is an intermediary app, AgentBar asks the user to choose a concrete supported browser before opening the route.
+- AgentBar pins the original HTTPS route to that concrete browser and polls cookies only from the same application. Interactive login never falls back to another browser, a stored session, or Cursor.app; cancelling browser selection or the absence of a supported browser stops before login opens.
+- An installed non-Safari browser remains eligible before its first profile or cookie database exists, and AgentBar detects the store created during login. Browsers with access-blocked profile data remain unavailable, while Safari still requires an existing readable cookie source.
+- AgentBar preserves its cached and legacy stored Cursor sessions while login is in progress. An accepted browser session must be durably cached before the legacy session is cleared, so cancellation or failure leaves the previous session intact. Add completes only after the authenticated response includes a Cursor account identity. Switch compares stable account IDs when both sides provide them and otherwise compares normalized email.
+- AgentBar checks all available profiles in the selected browser. Add accepts a sole unambiguous account automatically, while Switch always asks for confirmation before replacing the current account, even when only one eligible alternative is found. Multiple eligible accounts always require an explicit choice, and AgentBar caches only the chosen session.
 - A successful add or switch selects the Automatic cookie source. Saved manual headers and token accounts remain
   stored but passive: they do not override browser fetching, cached usage, quota warnings, or utilization/reset
   ownership. Explicitly selecting a saved token account switches Cursor back to Manual and reactivates it.
@@ -83,10 +83,10 @@ Manual option:
 
 ## Linux CLI
 - Cursor.app session import, automatic browser cookie import, and the external-browser Add/Switch flow are macOS app features.
-- Manual cookie headers from `~/.config/codexbar/config.json` (or legacy `~/.codexbar/config.json`) work on Linux.
+- Manual cookie headers from `~/.config/agentbar/config.json` (or legacy `~/.agentbar/config.json`) work on Linux.
 
 ## Local storage footprint
-When **Settings → Advanced → Track provider local storage** is enabled on macOS, CodexBar measures:
+When **Settings → Advanced → Track provider local storage** is enabled on macOS, AgentBar measures:
 - `~/Library/Application Support/Cursor`
 - `~/Library/Application Support/Caches/cursor-updater`
 - `~/.cursor`
@@ -96,7 +96,7 @@ When **Settings → Advanced → Track provider local storage** is enabled on ma
 - `~/Library/Caches/cursor-compile-cache`
 - `~/Library/HTTPStorages/com.todesktop.230313mzl4w4u92`
 
-The storage detail lists measured paths and their sizes. CodexBar does not delete Cursor data.
+The storage detail lists measured paths and their sizes. AgentBar does not delete Cursor data.
 
 ## Token cost (dashboard API)
 The cost summary's Cursor section is opt-in: it only fetches when **Show cost summary** is enabled and the Cursor provider is on.
@@ -105,7 +105,7 @@ Unlike Claude and Codex cost (scanned from local session logs on this machine), 
 Auth reuses the exact status-probe session resolution and cookie-source policy:
 - **Auto**: Cursor.app local auth → cached cookie header → browser cookie import → stored session.
 - **Manual**: a non-empty pasted cookie header is required and forwarded as-is, so cost and status share the same session; an empty header fails closed instead of falling back to another account.
-- **Off**: the fetch is skipped in the app; `codexbar cost --provider cursor` fails explicitly and `/cost` returns a provider error row.
+- **Off**: the fetch is skipped in the app; `agentbar cost --provider cursor` fails explicitly and `/cost` returns a provider error row.
 
 Fetch behavior:
 - `POST https://cursor.com/api/dashboard/get-filtered-usage-events` (cookie-authenticated; requires a matching `Origin` for CSRF).
@@ -131,9 +131,9 @@ Caching: the app holds the snapshot for an in-memory hourly TTL, keyed by the hi
 - Reset: billing cycle end date for monthly bars; Grok Bot uses `nextResetTimestampUtc` (weekly).
 
 ## Key files
-- `Sources/CodexBarCore/Providers/Cursor/CursorAppAuth.swift`
-- `Sources/CodexBarCore/Providers/Cursor/CursorStatusProbe.swift`
-- `Sources/CodexBarCore/Providers/Cursor/CursorSandUsage.swift` (Grok Bot weekly included usage)
-- `Sources/CodexBar/CursorLoginRunner.swift` (login flow)
-- `Sources/CodexBar/Providers/Cursor/CursorLoginFlow.swift` (menu integration)
-- `Sources/CodexBar/CursorLoginBrowserRouter.swift` (browser routing and selection)
+- `Sources/AgentBarCore/Providers/Cursor/CursorAppAuth.swift`
+- `Sources/AgentBarCore/Providers/Cursor/CursorStatusProbe.swift`
+- `Sources/AgentBarCore/Providers/Cursor/CursorSandUsage.swift` (Grok Bot weekly included usage)
+- `Sources/AgentBar/CursorLoginRunner.swift` (login flow)
+- `Sources/AgentBar/Providers/Cursor/CursorLoginFlow.swift` (menu integration)
+- `Sources/AgentBar/CursorLoginBrowserRouter.swift` (browser routing and selection)

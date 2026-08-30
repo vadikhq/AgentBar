@@ -24,8 +24,8 @@ This doc describes the **current provider architecture** and the exact steps to 
 - **Identity fields**: email/org/plan/loginMethod. Must stay **siloed per provider**.
 
 ## Architecture overview (now)
-- `Sources/CodexBarCore`: provider descriptors + fetch strategies + probes + parsing + shared utilities.
-- `Sources/CodexBar`: UI/state + provider implementations (settings/login/menu hooks only).
+- `Sources/AgentBarCore`: provider descriptors + fetch strategies + probes + parsing + shared utilities.
+- `Sources/AgentBar`: UI/state + provider implementations (settings/login/menu hooks only).
 - Provider IDs are compile-time: `UsageProvider` enum (used for persistence + widgets).
 - Provider wiring is descriptor-driven:
   - `ProviderDescriptor` owns labels, URLs, default enablement, and fetch pipeline.
@@ -122,13 +122,13 @@ Expose a narrow set of protocols/structs that provider implementations can use:
 Rule: providers do not talk to `FileManager`, `Security`, or “browser internals” directly unless they *are* the host API implementation.
 
 ## Provider-specific code layout
-- `Sources/CodexBarCore/Providers/<ProviderID>/`
+- `Sources/AgentBarCore/Providers/<ProviderID>/`
   - `<ProviderID>Descriptor.swift` (descriptor + strategy pipeline)
   - `<ProviderID>Strategies.swift` (strategy implementations)
   - `<ProviderID>Probe.swift` / `<ProviderID>Fetcher.swift`
   - `<ProviderID>Models.swift`
   - `<ProviderID>Parser.swift` (if text/HTML parsing)
-- `Sources/CodexBar/Providers/<ProviderID>/`
+- `Sources/AgentBar/Providers/<ProviderID>/`
   - `<ProviderID>ProviderImplementation.swift` (settings/login UI hooks only)
 
 ## Minimal provider example (copy-paste)
@@ -219,15 +219,15 @@ An integration can be restored when missing operator or authorization evidence b
 
 Adding a first-party provider currently requires all of these registration points:
 
-1. Create `Sources/CodexBarCore/Providers/<Name>/` with the descriptor, fetch strategies, and core settings or
+1. Create `Sources/AgentBarCore/Providers/<Name>/` with the descriptor, fetch strategies, and core settings or
    credential types.
-2. Create `Sources/CodexBar/Providers/<Name>/` with the app implementation and any app settings contribution or UI.
+2. Create `Sources/AgentBar/Providers/<Name>/` with the app implementation and any app settings contribution or UI.
 3. Add one stable case, in the intended bootstrap order, to `UsageProvider` in
-   `Sources/CodexBarCore/Providers/Providers.swift`.
+   `Sources/AgentBarCore/Providers/Providers.swift`.
 4. Run `Scripts/regenerate-provider-manifests.sh`. Do not edit `ProviderManifest.swift`,
    `ProviderImplementationManifest.swift`, or `ProviderInstanceIDAliases.generated.swift` directly. The generator also
    refreshes `docs/provider-ids.md`, which is linked from `docs/configuration.md`.
-5. Add `Sources/CodexBar/Resources/ProviderIcon-<id>.svg` and reference it from the descriptor's branding.
+5. Add `Sources/AgentBar/Resources/ProviderIcon-<id>.svg` and reference it from the descriptor's branding.
 6. Unless the descriptor sets `widgetSelectable: false`, add the matching case and literal
    `caseDisplayRepresentations` entry to the WidgetKit `ProviderChoice` `AppEnum`. AppIntents extracts this table
    statically, so widget display representations cannot be derived at runtime. `WidgetProviderChoiceTests` keeps the

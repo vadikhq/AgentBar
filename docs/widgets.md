@@ -1,9 +1,9 @@
 ---
-summary: "WidgetKit snapshot pipeline + visibility troubleshooting for CodexBar widgets."
+summary: "WidgetKit snapshot pipeline + visibility troubleshooting for AgentBar widgets."
 read_when:
   - Modifying WidgetKit extension behavior or snapshot format
   - Debugging widget update timing
-  - Widget gallery shows no CodexBar widgets
+  - Widget gallery shows no AgentBar widgets
 ---
 
 # Widgets
@@ -22,24 +22,24 @@ read_when:
 - Claude Usage widgets can show each known model-scoped weekly quota after the normal Session, Weekly, and Opus rows.
   This includes Fable when Claude exposes it. The rows are opt-in via **Preferences → Providers → Claude → Show
   model-specific weekly usage in widgets**; the setting is off by default and does not affect fetching or other
-  CodexBar surfaces. Turning it off also removes scoped rows kept from an earlier snapshot, including while no fresh
+  AgentBar surfaces. Turning it off also removes scoped rows kept from an earlier snapshot, including while no fresh
   Claude quota data is available.
 - If no snapshot is available, widgets fall back to preview/empty data.
 
 ## Extension
-- `Sources/CodexBarWidget` contains timeline + views.
-- `WidgetExtension/CodexBarWidgetExtension.xcodeproj` builds those sources as the packaged macOS WidgetKit app extension.
+- `Sources/AgentBarWidget` contains timeline + views.
+- `WidgetExtension/AgentBarWidgetExtension.xcodeproj` builds those sources as the packaged macOS WidgetKit app extension.
 - Keep data shape in sync with `WidgetSnapshot` in the main app.
 
 ## Widget types
-- **CodexBar Switcher** (`CodexBarSwitcherWidget`): static provider switcher widget, small/medium/large.
-- **CodexBar Usage** (`CodexBarUsageWidget`): configurable provider usage widget, small/medium/large.
-- **CodexBar History** (`CodexBarHistoryWidget`): configurable usage-history chart, medium/large.
-- **CodexBar Metric** (`CodexBarCompactWidget`): compact credits/today-cost/30-day-cost widget, small only.
-- **CodexBar Burn Down** (`CodexBarBurnDownWidget`): configurable session or weekly burn-down chart, medium only.
-- **CodexBar Burn Down (Combined)** (`CodexBarCombinedBurnDownWidget`): session and weekly burn-down charts, medium only.
+- **AgentBar Switcher** (`AgentBarSwitcherWidget`): static provider switcher widget, small/medium/large.
+- **AgentBar Usage** (`AgentBarUsageWidget`): configurable provider usage widget, small/medium/large.
+- **AgentBar History** (`AgentBarHistoryWidget`): configurable usage-history chart, medium/large.
+- **AgentBar Metric** (`AgentBarCompactWidget`): compact credits/today-cost/30-day-cost widget, small only.
+- **AgentBar Burn Down** (`AgentBarBurnDownWidget`): configurable session or weekly burn-down chart, medium only.
+- **AgentBar Burn Down (Combined)** (`AgentBarCombinedBurnDownWidget`): session and weekly burn-down charts, medium only.
 
-Switcher widgets share one remembered provider selection, so switching one updates all Switcher widgets. To keep Claude and Codex visible side by side, add two **CodexBar Usage** widgets and configure each widget's **Provider** separately. Usage widgets read their own configured provider instead of the shared Switcher selection.
+Switcher widgets share one remembered provider selection, so switching one updates all Switcher widgets. To keep Claude and Codex visible side by side, add two **AgentBar Usage** widgets and configure each widget's **Provider** separately. Usage widgets read their own configured provider instead of the shared Switcher selection.
 
 ## Provider picker support
 The configurable provider widgets currently expose:
@@ -55,16 +55,16 @@ registration, signing, or daemon caching (not SwiftUI code).
 
 ### 1) Verify the extension bundle exists where macOS expects it
 ```
-APP="/Applications/CodexBar.app"
-WAPPEX="$APP/Contents/PlugIns/CodexBarWidget.appex"
-WIDGET_ID="com.steipete.codexbar.widget" # debug builds use com.steipete.codexbar.debug.widget
+APP="/Applications/AgentBar.app"
+WAPPEX="$APP/Contents/PlugIns/AgentBarWidget.appex"
+WIDGET_ID="com.vadikhq.agentbar.widget" # debug builds use com.vadikhq.agentbar.debug.widget
 
 ls -la "$WAPPEX" "$WAPPEX/Contents" "$WAPPEX/Contents/MacOS"
 ```
 
 ### 2) PlugInKit registration (pkd)
 ```
-pluginkit -m -p com.apple.widgetkit-extension -v | grep -i codexbar || true
+pluginkit -m -p com.apple.widgetkit-extension -v | grep -i agentbar || true
 pluginkit -m -p com.apple.widgetkit-extension -i "$WIDGET_ID" -vv
 ```
 Notes:
@@ -83,10 +83,10 @@ If multiple paths appear, delete older installs and bump `CFBundleVersion`.
 ### 3) Code signing + Gatekeeper assessment
 Widgets are loaded by system daemons. Any signing failure can hide the widget.
 ```
-codesign --verify --deep --strict --verbose=4 /Applications/CodexBar.app
+codesign --verify --deep --strict --verbose=4 /Applications/AgentBar.app
 codesign --verify --strict --verbose=4 "$WAPPEX"
-codesign --verify --strict --verbose=4 "$WAPPEX/Contents/MacOS/CodexBarWidget"
-spctl --assess --type execute --verbose=4 /Applications/CodexBar.app
+codesign --verify --strict --verbose=4 "$WAPPEX/Contents/MacOS/AgentBarWidget"
+spctl --assess --type execute --verbose=4 /Applications/AgentBar.app
 ```
 
 ### 4) Restart the right daemons (NotificationCenter alone is not enough)
@@ -102,9 +102,9 @@ log stream --style compact --predicate '(process == "pkd" OR process == "chronod
 ```
 
 ### 6) Packaging sanity checks
-- Widget bundle id should be `com.steipete.codexbar.widget` for release and `com.steipete.codexbar.debug.widget` for debug.
+- Widget bundle id should be `com.vadikhq.agentbar.widget` for release and `com.vadikhq.agentbar.debug.widget` for debug.
 - `NSExtensionPointIdentifier` must be `com.apple.widgetkit-extension`.
-- Bundle folder name should match: `CodexBarWidget.appex`.
+- Bundle folder name should match: `AgentBarWidget.appex`.
 
 Optional: re-seed LaunchServices (rarely helps, but low risk):
 ```

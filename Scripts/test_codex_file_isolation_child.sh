@@ -12,7 +12,7 @@ import Foundation
 
 enum CodexOAuthCredentialsError: Error { case notFound }
 enum KeychainAccessGate {
-    static let disableAccessEnvironmentKey = "CODEXBAR_DISABLE_KEYCHAIN_ACCESS"
+    static let disableAccessEnvironmentKey = "AGENTBAR_DISABLE_KEYCHAIN_ACCESS"
     static var isDisabled: Bool { fatalError("The file policy must not consult Keychain state") }
 }
 
@@ -29,8 +29,8 @@ struct Proof {
             try Data("synthetic-child".utf8).write(to: childFile)
             try Data("synthetic-parent".utf8).write(to: parentFile)
             let inherited = [CodexCredentialFileAccess.isolationEnvironmentKey: "1",
-                             "CODEXBAR_SUPPRESS_TEST_KEYCHAIN_ACCESS": "1",
-                             "CODEXBAR_ALLOW_TEST_KEYCHAIN_ACCESS": "1",
+                             "AGENTBAR_SUPPRESS_TEST_KEYCHAIN_ACCESS": "1",
+                             "AGENTBAR_ALLOW_TEST_KEYCHAIN_ACCESS": "1",
                              "CODEX_HOME": root.path]
             for mode in ["deny", "fixture", "production"] {
                 let child = Process()
@@ -74,7 +74,7 @@ struct Proof {
 SWIFT
 
 swiftc -O -parse-as-library \
-  "$ROOT_DIR/Sources/CodexBarCore/CodexCredentialFileAccess.swift" \
-  "$ROOT_DIR/Sources/CodexBarCore/KeychainSecurity.swift" \
+  "$ROOT_DIR/Sources/AgentBarCore/CodexCredentialFileAccess.swift" \
+  "$ROOT_DIR/Sources/AgentBarCore/KeychainSecurity.swift" \
   "$PROOF_DIR/Proof.swift" -o "$PROOF_DIR/codex-file-child"
 "$PROOF_DIR/codex-file-child" launch "$PROOF_DIR/fixtures"

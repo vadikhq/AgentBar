@@ -1,7 +1,7 @@
 import Foundation
 import Testing
-@testable import CodexBarCLI
-@testable import CodexBarCore
+@testable import AgentBarCLI
+@testable import AgentBarCore
 
 @Suite(.serialized)
 struct PlatformGatingTests {
@@ -16,7 +16,7 @@ struct PlatformGatingTests {
 
     @Test
     func ampAutoSource_doesNotRequireWebSupport() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(.auto, provider: .amp))
+        #expect(!AgentBarCLI.sourceModeRequiresWebSupport(.auto, provider: .amp))
     }
 
     @Test
@@ -24,15 +24,15 @@ struct PlatformGatingTests {
         let manualCookieSettings = ProviderSettingsSnapshot.make(
             ollama: .init(cookieSource: .manual, manualCookieHeader: "__Secure-session=manual"))
 
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(!AgentBarCLI.sourceModeRequiresWebSupport(
             .auto,
             provider: .ollama,
             settings: manualCookieSettings))
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(!AgentBarCLI.sourceModeRequiresWebSupport(
             .web,
             provider: .ollama,
             settings: manualCookieSettings))
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(
+        #expect(AgentBarCLI.sourceModeRequiresWebSupport(
             .web,
             provider: .ollama,
             settings: ProviderSettingsSnapshot.make(
@@ -41,8 +41,8 @@ struct PlatformGatingTests {
 
     @Test
     func claudeAutoSource_allowsPlannerToFallBackToCLI() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(.auto, provider: .claude))
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(.web, provider: .claude))
+        #expect(!AgentBarCLI.sourceModeRequiresWebSupport(.auto, provider: .claude))
+        #expect(AgentBarCLI.sourceModeRequiresWebSupport(.web, provider: .claude))
     }
 
     @Test
@@ -185,13 +185,13 @@ struct PlatformGatingTests {
 
     @Test
     func claudeOAuthUsageDoesNotDetectCLIVersion() {
-        #expect(!CodexBarCLI.shouldDetectVersion(
+        #expect(!AgentBarCLI.shouldDetectVersion(
             provider: .claude,
             result: self.makeResult(kind: .oauth)))
-        #expect(CodexBarCLI.shouldDetectVersion(
+        #expect(AgentBarCLI.shouldDetectVersion(
             provider: .claude,
             result: self.makeResult(kind: .cli)))
-        #expect(CodexBarCLI.shouldDetectVersion(
+        #expect(AgentBarCLI.shouldDetectVersion(
             provider: .codex,
             result: self.makeResult(kind: .oauth)))
     }
