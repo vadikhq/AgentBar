@@ -1,8 +1,12 @@
 name: CI
 
 on:
-  # Personal fork: auto-trigger on push/PR disabled to avoid unattended CI runs.
-  # Re-enable push/pull_request blocks below if you want CI back.
+  # Personal fork: push trigger disabled to avoid an unattended run on every
+  # push to main. The pull_request trigger types are kept as-is (unused,
+  # since this fork doesn't open PRs against itself) because
+  # Scripts/test_swift_test_sharding.sh asserts this exact workflow shape.
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
   workflow_dispatch: {}
 
 concurrency:
