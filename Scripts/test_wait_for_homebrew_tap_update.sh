@@ -104,9 +104,9 @@ elif [[ "$url" == *'/actions/runs/222' ]]; then
     write_api_response 200 \
       '{"id":222,"display_title":"Update agentbar for v0.49.0 (agentbar-v0.49.0-31322422801)","status":"completed","conclusion":"success"}'
   fi
-elif [[ "$url" == *'/Formula/codexbar.rb' ]]; then
+elif [[ "$url" == *'/Formula/agentbar.rb' ]]; then
   cp "${MOCK_FIXTURE_DIR}/Formula.rb" "$body_file"
-elif [[ "$url" == *'/Casks/codexbar.rb' ]]; then
+elif [[ "$url" == *'/Casks/agentbar.rb' ]]; then
   if [[ "$MOCK_SCENARIO" == "content-mismatch" ]]; then
     cp "${MOCK_FIXTURE_DIR}/Cask-old.rb" "$body_file"
   else
@@ -136,14 +136,14 @@ class Agentbar < Formula
 end
 RUBY
 cat > "$fixture_dir/Cask.rb" <<'RUBY'
-cask "codexbar" do
+cask "agentbar" do
   version "0.49.0"
   sha256 "5555555555555555555555555555555555555555555555555555555555555555"
   url "https://github.com/steipete/CodexBar/releases/download/v#{version}/AgentBar-macos-universal-#{version}.zip"
 end
 RUBY
 cat > "$fixture_dir/Cask-old.rb" <<'RUBY'
-cask "codexbar" do
+cask "agentbar" do
   version "0.48.1"
   sha256 "5555555555555555555555555555555555555555555555555555555555555555"
   url "https://github.com/steipete/CodexBar/releases/download/v#{version}/AgentBar-macos-universal-#{version}.zip"
