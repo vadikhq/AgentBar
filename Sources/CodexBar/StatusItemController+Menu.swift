@@ -580,7 +580,7 @@ extension StatusItemController {
         let providerScopes = self.overviewProviderScopes(enabledProviders: enabledProviders)
         let rows: [(provider: UsageProvider, model: UsageMenuCardView.Model)] = providerScopes.visible
             .compactMap { provider in
-                guard let model = self.menuCardModel(for: provider) else { return nil }
+                guard let model = self.menuCardModel(for: provider, context: .overview) else { return nil }
                 guard !model.isOverviewErrorOnly else { return nil }
                 return (provider: provider, model: model)
             }

@@ -404,6 +404,8 @@ extension UsageMenuCardView.Model {
 
     private func hasCompatibleTrackedLayout(with candidate: Self, includeMetrics: Bool) -> Bool {
         guard self.provider == candidate.provider,
+              // A card built for another surface hides a different row set, so it can never stand in.
+              self.usageItemSurface == candidate.usageItemSurface,
               self.accountIdentityFingerprint == candidate.accountIdentityFingerprint,
               !includeMetrics || self.metrics.count == candidate.metrics.count,
               self.usageNotes == candidate.usageNotes,

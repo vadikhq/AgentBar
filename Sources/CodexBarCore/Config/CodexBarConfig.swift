@@ -191,6 +191,9 @@ public struct ProviderConfig: Codable, Sendable, Identifiable {
     public var accentColor: String?
     /// Stable menu-card item IDs hidden for this provider. Nil keeps the default of showing every item.
     public var hiddenUsageItemIDs: [String]?
+    /// Stable menu-card item IDs hidden only in the merged Overview tab, on top of `hiddenUsageItemIDs`.
+    /// Nil keeps Overview showing whatever the provider's own selection shows.
+    public var overviewHiddenUsageItemIDs: [String]?
     /// Arbitrary user-plugin values stay scoped to the provider instance. Secure values are redacted from config dumps.
     public var pluginSettings: [String: String]?
     public var pluginSecrets: [String: String]?
@@ -212,6 +215,7 @@ public struct ProviderConfig: Codable, Sendable, Identifiable {
         quotaWarnings: QuotaWarningConfig? = nil,
         accentColor: String? = nil,
         hiddenUsageItemIDs: [String]? = nil,
+        overviewHiddenUsageItemIDs: [String]? = nil,
         pluginSettings: [String: String]? = nil,
         pluginSecrets: [String: String]? = nil)
     {
@@ -230,6 +234,7 @@ public struct ProviderConfig: Codable, Sendable, Identifiable {
         self.quotaWarnings = quotaWarnings
         self.accentColor = accentColor
         self.hiddenUsageItemIDs = hiddenUsageItemIDs
+        self.overviewHiddenUsageItemIDs = overviewHiddenUsageItemIDs
         self.pluginSettings = pluginSettings
         self.pluginSecrets = pluginSecrets
         self.extensionValues = [:]

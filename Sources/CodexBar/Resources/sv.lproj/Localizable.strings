@@ -639,6 +639,7 @@
 "overview_enable_merge_icons_hint" = "Aktivera Slå ihop ikoner för att konfigurera leverantörer på översiktsfliken.";
 "overview_no_providers_hint" = "Inga aktiverade leverantörer är tillgängliga för översikten.";
 "overview_rows_follow_order" = "Översiktsrader följer alltid leverantörsordningen.";
+"overview_rows_footer" = "Rader som avmarkeras här visas fortfarande på leverantörens egen flik.";
 "overview_no_providers_selected" = "Inga leverantörer valda";
 "agent_sessions_title" = "Agentsessioner";
 "agent_sessions_subtitle" = "Visa lokala och via SSH upptäckta Codex- och Claude Code-sessioner i menyn.";

@@ -637,6 +637,7 @@
 "overview_enable_merge_icons_hint" = "概要タブのプロバイダを設定するには「アイコンを統合」を有効にしてください。";
 "overview_no_providers_hint" = "概要に使用できる有効なプロバイダがありません。";
 "overview_rows_follow_order" = "概要の行は常にプロバイダの並び順に従います。";
+"overview_rows_footer" = "ここでオフにした行は、プロバイダー自身のタブには引き続き表示されます。";
 "overview_no_providers_selected" = "プロバイダが選択されていません";
 "agent_sessions_title" = "エージェントセッション";
 "agent_sessions_subtitle" = "ローカルおよび SSH で検出された Codex と Claude Code のセッションをメニューに表示します。";

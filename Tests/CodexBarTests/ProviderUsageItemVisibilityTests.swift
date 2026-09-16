@@ -276,6 +276,106 @@ struct ProviderUsageItemVisibilityTests {
         #expect(reloaded.providerConfig(for: .cursor)?.hiddenUsageItemIDs == nil)
     }
 
+    @Test
+    func `overview follows the provider selection until it hides a row of its own`() {
+        let settings = Self.settings(
+            defaults: InMemoryUserDefaults(),
+            configStore: testConfigStore(suiteName: "overview-visibility-inherit-\(UUID().uuidString)"))
+
+        settings.setUsageItemVisible(false, itemID: .credits, for: .codex)
+        #expect(settings.hiddenUsageItemIDs(for: .codex, surface: .overview) == [.credits])
+        #expect(settings.overviewOnlyHiddenUsageItemIDs(for: .codex).isEmpty)
+
+        settings.setUsageItemVisible(false, itemID: .codexResetCredits, for: .codex, surface: .overview)
+
+        #expect(settings.hiddenUsageItemIDs(for: .codex) == [.credits])
+        #expect(settings.hiddenUsageItemIDs(for: .codex, surface: .overview) == [.credits, .codexResetCredits])
+    }
+
+    @Test
+    func `hiding a row in overview leaves the provider tab and its stored selection alone`() {
+        let settings = Self.settings(
+            defaults: InMemoryUserDefaults(),
+            configStore: testConfigStore(suiteName: "overview-visibility-scope-\(UUID().uuidString)"))
+        let model = Self.model(provider: .cursor, metricIDs: ["primary", "cursor-grok-bot"])
+
+        settings.setUsageItemVisible(false, itemID: .metric("cursor-grok-bot"), for: .cursor, surface: .overview)
+
+        #expect(settings.isUsageItemVisible(.metric("cursor-grok-bot"), for: .cursor))
+        #expect(!settings.isUsageItemVisible(.metric("cursor-grok-bot"), for: .cursor, surface: .overview))
+        #expect(settings.providerConfig(for: .cursor)?.hiddenUsageItemIDs == nil)
+        #expect(settings.providerConfig(for: .cursor)?.overviewHiddenUsageItemIDs == ["metric:cursor-grok-bot"])
+        #expect(model
+            .applyingUsageItemVisibility(hiddenItemIDs: settings.hiddenUsageItemIDs(for: .cursor))
+            .metrics.map(\.id) == ["primary", "cursor-grok-bot"])
+        #expect(model
+            .applyingUsageItemVisibility(hiddenItemIDs: settings.hiddenUsageItemIDs(for: .cursor, surface: .overview))
+            .metrics.map(\.id) == ["primary"])
+    }
+
+    @Test
+    func `restoring overview defaults returns it to following the provider selection`() {
+        let settings = Self.settings(
+            defaults: InMemoryUserDefaults(),
+            configStore: testConfigStore(suiteName: "overview-visibility-restore-\(UUID().uuidString)"))
+
+        settings.setUsageItemVisible(false, itemID: .metric("primary"), for: .codex)
+        settings.setUsageItemVisible(false, itemID: .credits, for: .codex, surface: .overview)
+        let revision = settings.providerConfigRevision(for: .codex)
+
+        settings.restoreDefaultUsageItemVisibility(for: .codex, surface: .overview)
+
+        // Nil, not [], so a later provider-level change keeps reaching Overview.
+        #expect(settings.providerConfig(for: .codex)?.overviewHiddenUsageItemIDs == nil)
+        #expect(settings.hiddenUsageItemIDs(for: .codex) == [.metric("primary")])
+        #expect(settings.hiddenUsageItemIDs(for: .codex, surface: .overview) == [.metric("primary")])
+        #expect(settings.providerConfigRevision(for: .codex) == revision)
+    }
+
+    @Test
+    func `menu card contexts map to their usage item surface`() {
+        #expect(UsageMenuCardContext.overview.usageItemSurface == .overview)
+        #expect(UsageMenuCardContext.menu.usageItemSurface == .shared)
+        #expect(UsageMenuCardContext.settings.usageItemSurface == .shared)
+        #expect(UsageMenuCardContext.account(.init()).usageItemSurface == .shared)
+    }
+
+    @Test
+    func `cards built for different surfaces never stand in for each other`() {
+        let menuCard = Self.model(provider: .codex, metricIDs: ["primary"])
+        var overviewCard = menuCard
+        overviewCard.usageItemSurface = .overview
+
+        #expect(menuCard.hasCompatibleTrackedLayout(with: menuCard))
+        #expect(!menuCard.hasCompatibleTrackedLayout(with: overviewCard))
+        #expect(!overviewCard.hasCompatibleTrackedLayout(with: menuCard))
+
+        var narrowedOverviewCard = Self.model(provider: .codex, metricIDs: [])
+        narrowedOverviewCard.usageItemSurface = .overview
+        let fullMenuCard = Self.model(provider: .codex, metricIDs: ["primary"])
+
+        // Without the surface guard, the frozen full card would be a valid metric subset match and
+        // would put the hidden row back into the Overview row mid-refresh.
+        #expect(!narrowedOverviewCard.hasCompatibleTrackedMetricSubset(of: fullMenuCard))
+        #expect(Self.model(provider: .codex, metricIDs: []).hasCompatibleTrackedMetricSubset(of: fullMenuCard))
+    }
+
+    @Test
+    func `overview selection is persisted and published for sync`() throws {
+        let configStore = testConfigStore(suiteName: "overview-visibility-sync-\(UUID().uuidString)")
+        let settings = Self.settings(defaults: InMemoryUserDefaults(), configStore: configStore)
+
+        settings.setUsageItemVisible(false, itemID: .credits, for: .codex, surface: .overview)
+
+        let config = try #require(settings.providerConfig(for: .codex))
+        #expect(ProviderIntentPayload(config: config).overviewHiddenUsageItemIDs == ["section:credits"])
+        #expect(try configStore.load()?.providerConfig(for: UsageProvider.codex.instanceID)?
+            .overviewHiddenUsageItemIDs == ["section:credits"])
+
+        let reloaded = Self.settings(defaults: InMemoryUserDefaults(), configStore: configStore)
+        #expect(reloaded.hiddenUsageItemIDs(for: .codex, surface: .overview) == [.credits])
+    }
+
     static func settings(
         defaults: InMemoryUserDefaults,
         configStore: CodexBarConfigStore) -> SettingsStore

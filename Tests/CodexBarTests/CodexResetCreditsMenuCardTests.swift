@@ -157,7 +157,7 @@ struct CodexResetCreditsMenuCardTests {
         #expect(frozen.hasCompatibleTrackedLayout(with: sameAccount))
 
         let monitor = MenuCardRefreshMonitor(
-            resolveModel: { _ in switched },
+            resolveModel: { _, _ in switched },
             isProviderRefreshActive: { _ in false })
         monitor.beginManualRefresh(frozenModels: [.codex: frozen], provider: .codex)
         #expect(!monitor.publishResolvedModelIfCompatible(for: .codex))
@@ -172,7 +172,7 @@ struct CodexResetCreditsMenuCardTests {
         let frozenResetText = try #require(frozen.metrics.first { $0.id == "secondary" }?.resetText)
         let resolvedResetText = try #require(resolved.metrics.first { $0.id == "secondary" }?.resetText)
         let monitor = MenuCardRefreshMonitor(
-            resolveModel: { _ in resolved },
+            resolveModel: { _, _ in resolved },
             isProviderRefreshActive: { _ in false })
         monitor.beginManualRefresh(frozenModels: [.codex: frozen], provider: .codex)
 

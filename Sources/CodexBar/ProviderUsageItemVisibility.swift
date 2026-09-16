@@ -1,6 +1,16 @@
 import CodexBarCore
 import Foundation
 
+/// Which surface a usage-item selection applies to.
+///
+/// `shared` is the provider's own menu tab and its Settings preview. `overview` is the merged
+/// Overview tab, which may hide further rows on top of the shared selection so the glance view keeps
+/// only the limit the user steers by.
+enum ProviderUsageItemSurface: Equatable, Sendable {
+    case shared
+    case overview
+}
+
 struct ProviderUsageItemID: Hashable, Sendable {
     private static let metricPrefix = "metric:"
 
@@ -113,7 +123,75 @@ extension UsageMenuCardView.Model {
 }
 
 extension SettingsStore {
-    func hiddenUsageItemIDs(for provider: UsageProvider) -> Set<ProviderUsageItemID> {
+    /// Items hidden on `surface`. Overview inherits the shared selection and adds its own rows, so a
+    /// row the user hid for the provider never reappears in the glance view.
+    func hiddenUsageItemIDs(
+        for provider: UsageProvider,
+        surface: ProviderUsageItemSurface = .shared) -> Set<ProviderUsageItemID>
+    {
+        let sharedIDs = self.sharedHiddenUsageItemIDs(for: provider)
+        switch surface {
+        case .shared:
+            return sharedIDs
+        case .overview:
+            return sharedIDs.union(self.overviewOnlyHiddenUsageItemIDs(for: provider))
+        }
+    }
+
+    /// Rows hidden in Overview while the provider's own tab still shows them. Empty means Overview
+    /// follows the shared selection, which is the default for every provider.
+    func overviewOnlyHiddenUsageItemIDs(for provider: UsageProvider) -> Set<ProviderUsageItemID> {
+        guard let storedIDs = self.providerConfig(for: provider)?.overviewHiddenUsageItemIDs else { return [] }
+        return Set(storedIDs.map(ProviderUsageItemID.init(rawValue:)))
+    }
+
+    func isUsageItemVisible(
+        _ itemID: ProviderUsageItemID,
+        for provider: UsageProvider,
+        surface: ProviderUsageItemSurface = .shared) -> Bool
+    {
+        !self.hiddenUsageItemIDs(for: provider, surface: surface).contains(itemID)
+    }
+
+    func setUsageItemVisible(
+        _ isVisible: Bool,
+        itemID: ProviderUsageItemID,
+        for provider: UsageProvider,
+        surface: ProviderUsageItemSurface = .shared)
+    {
+        switch surface {
+        case .shared:
+            var hiddenIDs = self.sharedHiddenUsageItemIDs(for: provider)
+            guard Self.apply(isVisible: isVisible, itemID: itemID, to: &hiddenIDs) else { return }
+            self.persistHiddenUsageItemIDs(hiddenIDs, for: provider)
+            self.updateLegacyUsageVisibility(provider: provider, hiddenItemIDs: hiddenIDs)
+        case .overview:
+            var hiddenIDs = self.overviewOnlyHiddenUsageItemIDs(for: provider)
+            guard Self.apply(isVisible: isVisible, itemID: itemID, to: &hiddenIDs) else { return }
+            self.persistOverviewHiddenUsageItemIDs(hiddenIDs.map(\.rawValue).sorted(), for: provider)
+        }
+    }
+
+    func restoreDefaultUsageItemVisibility(
+        for provider: UsageProvider,
+        surface: ProviderUsageItemSurface = .shared)
+    {
+        switch surface {
+        case .shared:
+            guard !self.sharedHiddenUsageItemIDs(for: provider).isEmpty ||
+                self.providerConfig(for: provider)?.hiddenUsageItemIDs == nil
+            else { return }
+
+            self.persistHiddenUsageItemIDs([], for: provider)
+            self.updateLegacyUsageVisibility(provider: provider, hiddenItemIDs: [])
+        case .overview:
+            // Nil, not [], so Overview goes back to following the provider's own selection.
+            guard self.providerConfig(for: provider)?.overviewHiddenUsageItemIDs != nil else { return }
+            self.persistOverviewHiddenUsageItemIDs(nil, for: provider)
+        }
+    }
+
+    private func sharedHiddenUsageItemIDs(for provider: UsageProvider) -> Set<ProviderUsageItemID> {
         if let storedIDs = self.providerConfig(for: provider)?.hiddenUsageItemIDs {
             return Set(storedIDs.map(ProviderUsageItemID.init(rawValue:)))
         }
@@ -130,34 +208,16 @@ extension SettingsStore {
         return hiddenIDs
     }
 
-    func isUsageItemVisible(_ itemID: ProviderUsageItemID, for provider: UsageProvider) -> Bool {
-        !self.hiddenUsageItemIDs(for: provider).contains(itemID)
-    }
-
-    func setUsageItemVisible(
-        _ isVisible: Bool,
+    /// Returns false when the selection already matched, so callers skip a no-op write.
+    private static func apply(
+        isVisible: Bool,
         itemID: ProviderUsageItemID,
-        for provider: UsageProvider)
+        to hiddenIDs: inout Set<ProviderUsageItemID>) -> Bool
     {
-        var hiddenIDs = self.hiddenUsageItemIDs(for: provider)
-        let changed = if isVisible {
-            hiddenIDs.remove(itemID) != nil
-        } else {
-            hiddenIDs.insert(itemID).inserted
+        if isVisible {
+            return hiddenIDs.remove(itemID) != nil
         }
-        guard changed else { return }
-
-        self.persistHiddenUsageItemIDs(hiddenIDs, for: provider)
-        self.updateLegacyUsageVisibility(provider: provider, hiddenItemIDs: hiddenIDs)
-    }
-
-    func restoreDefaultUsageItemVisibility(for provider: UsageProvider) {
-        guard !self.hiddenUsageItemIDs(for: provider).isEmpty ||
-            self.providerConfig(for: provider)?.hiddenUsageItemIDs == nil
-        else { return }
-
-        self.persistHiddenUsageItemIDs([], for: provider)
-        self.updateLegacyUsageVisibility(provider: provider, hiddenItemIDs: [])
+        return hiddenIDs.insert(itemID).inserted
     }
 
     private func persistHiddenUsageItemIDs(
@@ -167,6 +227,15 @@ extension SettingsStore {
         let rawIDs = hiddenItemIDs.map(\.rawValue).sorted()
         self.updateProviderConfig(provider: provider, affectsBackgroundWork: false) { entry in
             entry.hiddenUsageItemIDs = rawIDs
+        }
+    }
+
+    private func persistOverviewHiddenUsageItemIDs(
+        _ rawIDs: [String]?,
+        for provider: UsageProvider)
+    {
+        self.updateProviderConfig(provider: provider, affectsBackgroundWork: false) { entry in
+            entry.overviewHiddenUsageItemIDs = rawIDs
         }
     }
 

@@ -190,6 +190,9 @@ struct UsageMenuCardView: View {
         let tokenUsage: TokenUsageSection?
         let placeholder: String?
         let progressColor: Color
+        /// Surface this card was built for. Live refreshes must resolve the same surface, or a
+        /// narrowed Overview row would be replaced by the provider tab's full row set.
+        var usageItemSurface: ProviderUsageItemSurface = .shared
     }
 
     let model: Model

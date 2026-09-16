@@ -4,8 +4,8 @@ import Foundation
 extension StatusItemController {
     func makeMenuCardRefreshMonitor() -> MenuCardRefreshMonitor {
         MenuCardRefreshMonitor(
-            resolveModel: { [weak self] provider in
-                self?.menuCardModel(for: provider)
+            resolveModel: { [weak self] provider, surface in
+                self?.menuCardModel(for: provider, context: surface == .overview ? .overview : .menu)
             },
             isProviderRefreshActive: { [weak self] provider in
                 self?.store.refreshingProviders.contains(provider.instanceID) == true

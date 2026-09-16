@@ -3,6 +3,7 @@ import Foundation
 
 enum UsageMenuCardContext {
     case menu
+    case overview
     case settings
     case account(Account)
 
@@ -29,6 +30,12 @@ enum UsageMenuCardContext {
         if case .settings = self { return true }
         return false
     }
+
+    /// Only the merged Overview tab narrows rows further; every other surface uses the shared selection.
+    var usageItemSurface: ProviderUsageItemSurface {
+        if case .overview = self { return .overview }
+        return .shared
+    }
 }
 
 extension UsageStore {
@@ -37,8 +44,15 @@ extension UsageStore {
         context: UsageMenuCardContext = .menu,
         now: Date = Date()) -> UsageMenuCardView.Model
     {
-        UsageMenuCardView.Model.make(self.menuCardInput(for: provider, context: context, now: now))
-            .applyingUsageItemVisibility(hiddenItemIDs: self.settings.hiddenUsageItemIDs(for: provider))
+        var model = UsageMenuCardView.Model
+            .make(self.menuCardInput(for: provider, context: context, now: now))
+            .applyingUsageItemVisibility(
+                hiddenItemIDs: self.settings.hiddenUsageItemIDs(
+                    for: provider,
+                    surface: context.usageItemSurface))
+        // The hosted card carries its own surface so live refreshes resolve the same row set.
+        model.usageItemSurface = context.usageItemSurface
+        return model
     }
 
     func menuCardInput(

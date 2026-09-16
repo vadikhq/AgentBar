@@ -640,6 +640,7 @@
 "overview_enable_merge_icons_hint" = "Activez Fusionner les icônes pour configurer les fournisseurs d'onglets Présentation.";
 "overview_no_providers_hint" = "Aucun fournisseur activé disponible pour la présentation.";
 "overview_rows_follow_order" = "Les lignes de présentation suivent toujours l’ordre des fournisseurs.";
+"overview_rows_footer" = "Les lignes décochées ici restent visibles dans l’onglet du fournisseur.";
 "overview_no_providers_selected" = "Aucun fournisseur sélectionné";
 "agent_sessions_title" = "Sessions d’agents";
 "agent_sessions_subtitle" = "Afficher dans le menu les sessions Codex et Claude Code locales et découvertes via SSH.";

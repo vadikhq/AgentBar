@@ -232,30 +232,64 @@ struct ProviderUsageItemVisibilitySettingsView: View {
 
     var body: some View {
         Section {
-            ForEach(self.items) { item in
-                Toggle(
-                    isOn: Binding(
-                        get: { self.settings.isUsageItemVisible(item.id, for: self.provider) },
-                        set: { isVisible in
-                            self.settings.setUsageItemVisible(
-                                isVisible,
-                                itemID: item.id,
-                                for: self.provider)
-                        })) {
-                    Text(item.title)
-                }
-                .toggleStyle(.checkbox)
-            }
-
-            Button(L("Restore Defaults")) {
-                self.settings.restoreDefaultUsageItemVisibility(for: self.provider)
-            }
-            .disabled(self.settings.hiddenUsageItemIDs(for: self.provider).isEmpty)
+            ProviderUsageItemVisibilityRows.content(
+                provider: self.provider,
+                settings: self.settings,
+                items: self.items,
+                surface: .shared)
         } header: {
             Text(L("Visible usage items"))
         } footer: {
             SettingsSectionFooter(L(
                 "Choose which usage rows appear in this provider's menu, Settings preview, and Overview."))
+        }
+    }
+}
+
+/// Checkbox rows plus the restore action, shared by the provider's Settings section and the Overview
+/// popover so both surfaces stay one implementation. Returned as loose views so a Form section keeps
+/// rendering them as separate rows.
+@MainActor
+enum ProviderUsageItemVisibilityRows {
+    @ViewBuilder
+    static func content(
+        provider: UsageProvider,
+        settings: SettingsStore,
+        items: [ProviderUsageItemDescriptor],
+        surface: ProviderUsageItemSurface) -> some View
+    {
+        ForEach(items) { item in
+            Toggle(
+                isOn: Binding(
+                    get: { settings.isUsageItemVisible(item.id, for: provider, surface: surface) },
+                    set: { isVisible in
+                        settings.setUsageItemVisible(
+                            isVisible,
+                            itemID: item.id,
+                            for: provider,
+                            surface: surface)
+                    })) {
+                Text(item.title)
+            }
+            .toggleStyle(.checkbox)
+        }
+
+        Button(L("Restore Defaults")) {
+            settings.restoreDefaultUsageItemVisibility(for: provider, surface: surface)
+        }
+        .disabled(self.isRestoreDisabled(provider: provider, settings: settings, surface: surface))
+    }
+
+    private static func isRestoreDisabled(
+        provider: UsageProvider,
+        settings: SettingsStore,
+        surface: ProviderUsageItemSurface) -> Bool
+    {
+        switch surface {
+        case .shared:
+            settings.hiddenUsageItemIDs(for: provider).isEmpty
+        case .overview:
+            settings.overviewOnlyHiddenUsageItemIDs(for: provider).isEmpty
         }
     }
 }

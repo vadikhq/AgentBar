@@ -646,6 +646,7 @@
 "overview_enable_merge_icons_hint" = "تفعيل أيقونات الدمج لتكوين مزودي تبويب النظرة العامة.";
 "overview_no_providers_hint" = "لا يوجد مزودون مفعلون متاحون للنظرة العامة.";
 "overview_rows_follow_order" = "الصفوف العامة دائما تتبع ترتيب مقدم الخدمة.";
+"overview_rows_footer" = "تظل الصفوف غير المحددة هنا ظاهرة في علامة تبويب المزوّد نفسه.";
 "overview_no_providers_selected" = "لم يتم اختيار أي مقدمي خدمة";
 "agent_sessions_title" = "جلسات الوكلاء";
 "agent_sessions_subtitle" = "إظهار جلسات Codex وClaude Code المحلية والمكتشفة عبر SSH في القائمة.";

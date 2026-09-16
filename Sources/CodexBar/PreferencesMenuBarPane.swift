@@ -157,28 +157,62 @@ struct MenuBarPane: View {
                 .foregroundStyle(.tertiary)
 
             ScrollView(.vertical, showsIndicators: true) {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     ForEach(self.activeProvidersInOrder, id: \.self) { provider in
-                        Toggle(
-                            isOn: Binding(
-                                get: { self.overviewSelectedProviders.contains(provider) },
-                                set: { shouldSelect in
-                                    self.setOverviewProviderSelection(provider: provider, isSelected: shouldSelect)
-                                })) {
-                            Text(self.providerDisplayName(provider))
-                                .font(.body)
-                        }
-                        .toggleStyle(.checkbox)
-                        .disabled(
-                            !self.overviewSelectedProviders.contains(provider) &&
-                                self.overviewSelectedProviders.count >= Self.maxOverviewProviders)
+                        self.overviewProviderEntry(provider)
                     }
                 }
             }
-            .frame(maxHeight: 220)
+            .frame(maxHeight: 280)
+
+            Text(L("overview_rows_footer"))
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
         }
         .padding(12)
-        .frame(width: 280)
+        .frame(width: 320)
+    }
+
+    private func overviewProviderEntry(_ provider: UsageProvider) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Toggle(
+                isOn: Binding(
+                    get: { self.overviewSelectedProviders.contains(provider) },
+                    set: { shouldSelect in
+                        self.setOverviewProviderSelection(provider: provider, isSelected: shouldSelect)
+                    })) {
+                Text(self.providerDisplayName(provider))
+                    .font(.body)
+            }
+            .toggleStyle(.checkbox)
+            .disabled(
+                !self.overviewSelectedProviders.contains(provider) &&
+                    self.overviewSelectedProviders.count >= Self.maxOverviewProviders)
+
+            let usageItems = self.overviewUsageItems(for: provider)
+            if self.overviewSelectedProviders.contains(provider), !usageItems.isEmpty {
+                DisclosureGroup(L("Visible usage items")) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ProviderUsageItemVisibilityRows.content(
+                            provider: provider,
+                            settings: self.settings,
+                            items: usageItems,
+                            surface: .overview)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .font(.footnote)
+                .padding(.leading, 18)
+            }
+        }
+    }
+
+    /// Rows the provider still shows after its own selection. Overview can only narrow further, so a
+    /// row already hidden for the provider never reaches this list.
+    private func overviewUsageItems(for provider: UsageProvider) -> [ProviderUsageItemDescriptor] {
+        self.store
+            .menuCardModel(for: provider, context: .settings)
+            .usageItemDescriptors(includingHidden: self.settings.overviewOnlyHiddenUsageItemIDs(for: provider))
     }
 
     private var activeProvidersInOrder: [UsageProvider] {

@@ -10,7 +10,7 @@ struct MenuCardLiveSubtitle {
 @MainActor
 @Observable
 final class MenuCardRefreshMonitor {
-    typealias ModelResolver = @MainActor (UsageProvider) -> UsageMenuCardView.Model?
+    typealias ModelResolver = @MainActor (UsageProvider, ProviderUsageItemSurface) -> UsageMenuCardView.Model?
     typealias ProviderRefreshStateResolver = @MainActor (UsageProvider) -> Bool
 
     private let resolveModel: ModelResolver
@@ -73,7 +73,7 @@ final class MenuCardRefreshMonitor {
         let instanceID = provider.instanceID
         guard self.manualRefreshProviders.contains(instanceID),
               let frozen = self.frozenManualRefreshModels[instanceID],
-              let resolved = self.resolveModel(provider),
+              let resolved = self.resolveModel(provider, frozen.usageItemSurface),
               frozen.hasCompatibleTrackedLayout(with: resolved)
         else {
             return false
@@ -116,7 +116,7 @@ final class MenuCardRefreshMonitor {
             return fallback
         }
 
-        if let resolved = self.resolveModel(provider),
+        if let resolved = self.resolveModel(provider, fallback.usageItemSurface),
            fallback.hasCompatibleTrackedLayout(with: resolved)
         {
             return resolved
@@ -136,7 +136,8 @@ final class MenuCardRefreshMonitor {
         if self.isManualRefreshInFlight(for: provider) {
             return MenuCardLiveSubtitle(text: "\(L("Refreshing"))…", style: .loading)
         }
-        guard let model = self.resolveModel(provider) else { return fallback }
+        // Subtitles are identical on every surface, so the shared model is enough here.
+        guard let model = self.resolveModel(provider, .shared) else { return fallback }
         return MenuCardLiveSubtitle(text: model.subtitleText, style: model.subtitleStyle)
     }
 }

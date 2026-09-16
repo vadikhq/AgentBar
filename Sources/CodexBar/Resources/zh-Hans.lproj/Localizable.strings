@@ -615,6 +615,7 @@
 "overview_enable_merge_icons_hint" = "启用“合并图标”以配置“概览”标签中的提供商。";
 "overview_no_providers_hint" = "“概览”中没有可用的已启用提供商。";
 "overview_rows_follow_order" = "概览行始终遵循提供商顺序。";
+"overview_rows_footer" = "在此取消勾选的行仍会显示在该服务商自己的标签页中。";
 "overview_no_providers_selected" = "未选择提供商";
 "agent_sessions_title" = "智能体会话";
 "agent_sessions_subtitle" = "在菜单中显示本地及通过 SSH 发现的 Codex 和 Claude Code 会话。";

@@ -42,6 +42,8 @@ public struct ProviderIntentPayload: Codable, Sendable {
     public var accentColor: String?
     /// Three-state like accentColor: nil means an older sender, [] clears all hidden items.
     public var hiddenUsageItemIDs: [String]?
+    /// Three-state like hiddenUsageItemIDs, for the rows hidden only in the Overview tab.
+    public var overviewHiddenUsageItemIDs: [String]?
     public var kiloKnownOrganizations: [KiloOrganization]?
     public var kiloEnabledOrganizationIDs: [String]?
     public var deepseekProfileID: String?
@@ -63,6 +65,7 @@ public struct ProviderIntentPayload: Codable, Sendable {
         self.accentColor = config.accentColor ?? ""
         // Preserve the three states: nil predates the preference, [] explicitly shows every item.
         self.hiddenUsageItemIDs = config.hiddenUsageItemIDs
+        self.overviewHiddenUsageItemIDs = config.overviewHiddenUsageItemIDs
         self.kiloKnownOrganizations = config.kiloKnownOrganizations
         self.kiloEnabledOrganizationIDs = config.kiloEnabledOrganizationIDs
         self.deepseekProfileID = config.deepseekProfileID
@@ -100,6 +103,9 @@ public struct ProviderIntentPayload: Codable, Sendable {
         // Older clients omit the field. Keep the local selection rather than erase it.
         if let hiddenUsageItemIDs = self.hiddenUsageItemIDs {
             result.hiddenUsageItemIDs = hiddenUsageItemIDs
+        }
+        if let overviewHiddenUsageItemIDs = self.overviewHiddenUsageItemIDs {
+            result.overviewHiddenUsageItemIDs = overviewHiddenUsageItemIDs
         }
         result.kiloKnownOrganizations = self.kiloKnownOrganizations
         result.kiloEnabledOrganizationIDs = self.kiloEnabledOrganizationIDs

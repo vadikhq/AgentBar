@@ -640,6 +640,7 @@
 "overview_enable_merge_icons_hint" = "Увімкніть Merge Icons, щоб налаштувати постачальників вкладок «Огляд».";
 "overview_no_providers_hint" = "Немає активованих постачальників, доступних для огляду.";
 "overview_rows_follow_order" = "Оглядові рядки завжди відповідають порядку постачальника.";
+"overview_rows_footer" = "Рядки, зняті тут, залишаються видимими на вкладці самого постачальника.";
 "overview_no_providers_selected" = "Не вибрано жодного постачальника";
 "agent_sessions_title" = "Сеанси агентів";
 "agent_sessions_subtitle" = "Показувати в меню локальні й виявлені через SSH сеанси Codex і Claude Code.";
