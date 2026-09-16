@@ -62,6 +62,7 @@ struct SettingsDefaultsState {
     var confettiOnSessionLimitResetsEnabled: Bool
     var confettiOnWeeklyLimitResetsEnabled: Bool
     var menuBarShowsHighestUsage: Bool
+    var menuBarShowsProviderBars: Bool
     var claudeOAuthKeychainPromptModeRaw: String?
     var claudeOAuthKeychainReadStrategyRaw: String?
     var claudeOAuthDirectKeychainReadAllowed: Bool

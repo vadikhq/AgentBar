@@ -4,12 +4,14 @@ import Foundation
 enum MenuBarIconStyle: String, CaseIterable {
     case critters
     case bars
+    case providerBars
     case iconAndPercent
 
     var label: String {
         switch self {
         case .critters: L("menu_bar_style_critters")
         case .bars: L("menu_bar_style_bars")
+        case .providerBars: L("menu_bar_style_provider_bars")
         case .iconAndPercent: L("menu_bar_style_icon_percent")
         }
     }
@@ -125,17 +127,27 @@ extension String {
 extension SettingsStore {
     var menuBarIconStyle: MenuBarIconStyle {
         get {
+            // Provider bars win over the other flags so an older build's brand-icon choice does not
+            // resurrect itself while this style is on.
+            if self.menuBarShowsProviderBars {
+                return .providerBars
+            }
             if self.menuBarShowsBrandIconWithPercent {
                 return .iconAndPercent
             }
             return self.menuBarHidesCritters ? .bars : .critters
         }
         set {
+            self.menuBarShowsProviderBars = newValue == .providerBars
             switch newValue {
             case .critters:
                 self.menuBarShowsBrandIconWithPercent = false
                 self.menuBarHidesCritters = false
             case .bars:
+                self.menuBarShowsBrandIconWithPercent = false
+                self.menuBarHidesCritters = true
+            case .providerBars:
+                // The stored layout path keys off the brand flag; leave it off or it renders first.
                 self.menuBarShowsBrandIconWithPercent = false
                 self.menuBarHidesCritters = true
             case .iconAndPercent:

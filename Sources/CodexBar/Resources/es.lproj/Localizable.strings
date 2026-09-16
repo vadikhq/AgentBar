@@ -590,6 +590,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Usa un renderizado de alto contraste para mantener legibles el icono y la métrica en otras pantallas.";
 "menu_bar_style_critters" = "Bichitos";
 "menu_bar_style_bars" = "Barras de medición";
+"menu_bar_style_provider_bars" = "Barras por proveedor";
+"menu_bar_style_provider_bars_hint" = "Un medidor por proveedor de Resumen, en ese orden, hasta 4. Requiere Combinar iconos activado.";
 "menu_bar_style_icon_percent" = "Icono y porcentaje";
 "switcher_rows_title" = "Filas del selector";
 "switcher_rows_icons" = "Iconos de proveedor";

@@ -56,6 +56,10 @@ struct MenuBarPane: View {
                 .disabled(self.settings.menuBarIconStyle != .iconAndPercent)
             } header: {
                 Text(L("section_icon"))
+            } footer: {
+                if self.settings.menuBarIconStyle == .providerBars {
+                    SettingsSectionFooter(L("menu_bar_style_provider_bars_hint"))
+                }
             }
 
             Section {
@@ -86,7 +90,9 @@ struct MenuBarPane: View {
                         L("show_most_used_provider_title"),
                         subtitle: L("show_most_used_provider_subtitle"))
                 }
-                .disabled(!self.settings.mergeIcons)
+                // Stacked meters already show every selected provider, so ranking one of them to the
+                // front would only reorder rows the user pinned.
+                .disabled(!self.settings.mergeIcons || self.settings.menuBarIconStyle == .providerBars)
 
                 self.overviewProviderRow
                     .disabled(!self.settings.mergeIcons)

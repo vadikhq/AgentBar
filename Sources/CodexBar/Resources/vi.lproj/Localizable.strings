@@ -594,6 +594,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Sử dụng hiển thị tương phản cao để biểu tượng và chỉ số vẫn dễ đọc trên các màn hình khác.";
 "menu_bar_style_critters" = "Sinh vật";
 "menu_bar_style_bars" = "Thanh đo";
+"menu_bar_style_provider_bars" = "Thanh theo nhà cung cấp";
+"menu_bar_style_provider_bars_hint" = "Một thanh cho mỗi nhà cung cấp trong Tổng quan, theo thứ tự đó, tối đa 4. Cần bật Gộp biểu tượng.";
 "menu_bar_style_icon_percent" = "Biểu tượng & phần trăm";
 "switcher_rows_title" = "Các hàng của trình chuyển đổi";
 "switcher_rows_icons" = "Biểu tượng nhà cung cấp";

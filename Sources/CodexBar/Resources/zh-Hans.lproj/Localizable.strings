@@ -580,6 +580,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "使用高对比度绘制，让其他显示器上的图标和指标仍清晰可读。";
 "menu_bar_style_critters" = "小动物";
 "menu_bar_style_bars" = "进度条";
+"menu_bar_style_provider_bars" = "每个服务商一条";
+"menu_bar_style_provider_bars_hint" = "概览中每个服务商一条，顺序相同，最多 4 条。需开启合并图标。";
 "menu_bar_style_icon_percent" = "图标和百分比";
 "switcher_rows_title" = "切换器行";
 "switcher_rows_icons" = "提供商图标";

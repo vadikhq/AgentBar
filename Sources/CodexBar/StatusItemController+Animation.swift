@@ -278,6 +278,10 @@ extension StatusItemController {
             return layoutResult
         }
 
+        if let providerBarsResult = self.applyProviderBarsIconIfNeeded() {
+            return providerBarsResult
+        }
+
         // IconRenderer treats these values as a left-to-right "progress fill" percentage; depending on the
         // user setting we pass either "percent left" or "percent used".
         let resolved = self.resolvedMenuBarIconPercents(
@@ -441,6 +445,54 @@ extension StatusItemController {
         else { return nil }
         self.noteIconPerfRender(skipped: wasCached)
         return wasCached
+    }
+
+    /// Providers drawn as stacked meters: the Overview selection, in provider order, trimmed to what
+    /// still reads at menu bar size.
+    func providerBarsIconProviders() -> [UsageProvider] {
+        Array(
+            self.settings.resolvedMergedOverviewProviders(
+                activeProviders: self.store.enabledFirstPartyProvidersForDisplay())
+                .prefix(IconRenderer.providerBarsMaxCount))
+    }
+
+    /// One meter per Overview provider, in that fixed order. Returns nil when the style is off or
+    /// there is nothing to stack, leaving the caller on the single-provider icon.
+    private func applyProviderBarsIconIfNeeded() -> Bool? {
+        guard self.settings.menuBarIconStyle == .providerBars, self.shouldMergeIcons else { return nil }
+        let providers = self.providerBarsIconProviders()
+        guard providers.count > 1, let button = self.statusItem.button else { return nil }
+
+        let showUsed = self.settings.usageBarsShowUsed
+        let fills: [Double?] = providers.map { provider in
+            let snapshot = self.store.menuBarSnapshot(for: provider.instanceID)
+            guard let window = self.menuBarMetricWindow(for: provider, snapshot: snapshot) else { return nil }
+            return showUsed ? window.usedPercent : window.remainingPercent
+        }
+        // Dim the stack only when every meter is stale; one lagging provider must not fade the rest.
+        let stale = providers.allSatisfy { self.store.isStale(provider: $0) }
+        let warningFlash = providers.contains { self.quotaWarningFlashActive(provider: $0) }
+
+        let signature = ([
+            "mode=providerBars",
+            "providers=\(providers.map(\.rawValue).joined(separator: ","))",
+            "showUsed=\(showUsed ? "1" : "0")",
+            "stale=\(stale ? "1" : "0")",
+            "warningFlash=\(warningFlash ? "1" : "0")",
+        ] + fills.map { "fill=\(Self.iconSignatureValue($0))" }).joined(separator: "|")
+
+        let canSkipCachedRender = self.prepareButtonForImageOnlyCacheHit(button)
+        if self.shouldSkipMergedIconRender(signature), canSkipCachedRender {
+            self.noteIconPerfRender(skipped: true)
+            return true
+        }
+        let image = IconRenderer.makeProviderBarsIcon(fillPercents: fills, stale: stale)
+        self.setButtonContent(
+            image: warningFlash ? Self.quotaWarningFlashImage(base: image) : image,
+            title: nil,
+            for: button)
+        self.noteIconPerfRender(skipped: false)
+        return false
     }
 
     private func deferMergedIconRenderDuringMenuTrackingIfNeeded() -> Bool {

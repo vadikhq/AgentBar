@@ -25,7 +25,7 @@ enum IconRenderer {
     // Render to an 18×18 pt template (36×36 px at 2×) to match the system menu bar size.
     private static let outputSize = NSSize(width: 18, height: 18)
     private static let outputScale: CGFloat = 2
-    private static let canvasPx = Int(outputSize.width * outputScale)
+    static let canvasPx = Int(outputSize.width * outputScale)
 
     private struct PixelGrid {
         let scale: CGFloat
@@ -44,6 +44,115 @@ enum IconRenderer {
     }
 
     private static let grid = PixelGrid(scale: outputScale)
+
+    /// 15 pt at 2×, uses the slot better without touching edges.
+    static let meterWidthPx = 30
+
+    /// Rect for one stacked provider meter, in icon pixels with the origin at the bottom-left.
+    struct ProviderBarRect: Equatable, Sendable {
+        let x: Int
+        let y: Int
+        let width: Int
+        let height: Int
+    }
+
+    /// Most meters that still read at menu bar size. Past this the bars thin to two points and the
+    /// fill edge stops being distinguishable from the track.
+    static let providerBarsMaxCount = 4
+
+    /// Stacked meter geometry, topmost row first. Pure so tests can pin ordering, spacing, and canvas
+    /// bounds without rendering an image.
+    static func providerBarRects(count requestedCount: Int) -> [ProviderBarRect] {
+        guard requestedCount > 0 else { return [] }
+        let count = min(requestedCount, Self.providerBarsMaxCount)
+        let marginPx = 2
+        let gapPx = count >= 4 ? 3 : 4
+        let availablePx = Self.canvasPx - marginPx * 2
+        let rawHeightPx = (availablePx - gapPx * (count - 1)) / count
+        // 12 px is the thickest bar the single-provider icon draws; a lone meter should not balloon.
+        let heightPx = min(12, max(4, rawHeightPx))
+        let stackHeightPx = heightPx * count + gapPx * (count - 1)
+        let bottomPx = (Self.canvasPx - stackHeightPx) / 2
+        let xPx = (Self.canvasPx - Self.meterWidthPx) / 2
+        return (0..<count).map { index in
+            ProviderBarRect(
+                x: xPx,
+                y: bottomPx + (count - 1 - index) * (heightPx + gapPx),
+                width: Self.meterWidthPx,
+                height: heightPx)
+        }
+    }
+
+    /// One meter per provider, drawn top to bottom in the caller's order. The order is the caller's
+    /// to keep: the icon must not reshuffle rows as usage moves.
+    static func makeProviderBarsIcon(fillPercents: [Double?], stale: Bool) -> NSImage {
+        let rects = self.providerBarRects(count: fillPercents.count)
+        return self.renderImage {
+            let baseFill = NSColor.labelColor
+            let trackFillColor = baseFill.withAlphaComponent(stale ? 0.18 : 0.28)
+            let trackStrokeColor = baseFill.withAlphaComponent(stale ? 0.28 : 0.44)
+            let fillColor = baseFill.withAlphaComponent(stale ? 0.55 : 1.0)
+            for (rect, percent) in zip(rects, fillPercents) {
+                self.drawMeter(
+                    rectPx: RectPx(x: rect.x, y: rect.y, w: rect.width, h: rect.height),
+                    remaining: percent,
+                    cornerRadiusPx: rect.height / 2,
+                    trackFillColor: trackFillColor,
+                    trackStrokeColor: trackStrokeColor,
+                    fillColor: fillColor)
+            }
+        }
+    }
+
+    /// Track plus left-to-right progress fill. Shared by the single-provider icon and the stacked
+    /// provider meters so both keep the same weight and corner treatment.
+    private static func drawMeter(
+        rectPx: RectPx,
+        remaining: Double?,
+        cornerRadiusPx: Int,
+        trackFillColor: NSColor?,
+        trackStrokeColor: NSColor,
+        fillColor: NSColor)
+    {
+        let rect = rectPx.rect()
+        let radius = Self.grid.pt(cornerRadiusPx)
+        let trackPath = NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
+        if let trackFillColor {
+            trackFillColor.setFill()
+            trackPath.fill()
+        }
+
+        // Crisp outline: stroke an inset path so the stroke stays within pixel bounds.
+        let strokeWidthPx = 2 // 1 pt == 2 px at 2×
+        let insetPx = strokeWidthPx / 2
+        let strokeRect = Self.grid.rect(
+            x: rectPx.x + insetPx,
+            y: rectPx.y + insetPx,
+            w: max(0, rectPx.w - insetPx * 2),
+            h: max(0, rectPx.h - insetPx * 2))
+        let strokePath = NSBezierPath(
+            roundedRect: strokeRect,
+            xRadius: Self.grid.pt(max(0, cornerRadiusPx - insetPx)),
+            yRadius: Self.grid.pt(max(0, cornerRadiusPx - insetPx)))
+        strokePath.lineWidth = CGFloat(strokeWidthPx) / Self.outputScale
+        trackStrokeColor.setStroke()
+        strokePath.stroke()
+
+        // Fill: clip to the capsule and paint a left-to-right rect so the progress edge is straight.
+        guard let remaining else { return }
+        let fillWidthPx = Self.fillWidthPixels(remaining: remaining, rectWidth: rectPx.w)
+        guard fillWidthPx > 0 else { return }
+        NSGraphicsContext.current?.cgContext.saveGState()
+        trackPath.addClip()
+        fillColor.setFill()
+        NSBezierPath(
+            rect: Self.grid.rect(
+                x: rectPx.x,
+                y: rectPx.y,
+                w: fillWidthPx,
+                h: rectPx.h)).fill()
+        NSGraphicsContext.current?.cgContext.restoreGState()
+    }
 
     static func fillWidthPixels(remaining: Double, rectWidth: Int) -> Int {
         let clamped = max(0, min(remaining / 100, 1))
@@ -156,7 +265,7 @@ enum IconRenderer {
                 let trackStrokeAlpha: CGFloat = stale ? 0.28 : 0.44
                 let fillColor = baseFill.withAlphaComponent(stale ? 0.55 : 1.0)
 
-                let barWidthPx = 30 // 15 pt at 2×, uses the slot better without touching edges.
+                let barWidthPx = Self.meterWidthPx
                 let barXPx = (Self.canvasPx - barWidthPx) / 2
 
                 func drawBar(
@@ -174,50 +283,18 @@ enum IconRenderer {
                     drawTrackFill: Bool = true,
                     warpEyesFilled: Bool = false)
                 {
-                    let rect = rectPx.rect()
                     // Claude reads better as a blockier critter; Codex stays as a capsule.
                     // Warp uses small corner radius for rounded rectangle (matching logo style)
                     let cornerRadiusPx = addNotches ? 0 : (addWarpTwist ? 3 : rectPx.h / 2)
-                    let radius = Self.grid.pt(cornerRadiusPx)
-
-                    let trackPath = NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
-                    if drawTrackFill {
-                        baseFill.withAlphaComponent(trackFillAlpha * alpha).setFill()
-                        trackPath.fill()
-                    }
-
-                    // Crisp outline: stroke an inset path so the stroke stays within pixel bounds.
-                    let strokeWidthPx = 2 // 1 pt == 2 px at 2×
-                    let insetPx = strokeWidthPx / 2
-                    let strokeRect = Self.grid.rect(
-                        x: rectPx.x + insetPx,
-                        y: rectPx.y + insetPx,
-                        w: max(0, rectPx.w - insetPx * 2),
-                        h: max(0, rectPx.h - insetPx * 2))
-                    let strokePath = NSBezierPath(
-                        roundedRect: strokeRect,
-                        xRadius: Self.grid.pt(max(0, cornerRadiusPx - insetPx)),
-                        yRadius: Self.grid.pt(max(0, cornerRadiusPx - insetPx)))
-                    strokePath.lineWidth = CGFloat(strokeWidthPx) / Self.outputScale
-                    baseFill.withAlphaComponent(trackStrokeAlpha * alpha).setStroke()
-                    strokePath.stroke()
-
-                    // Fill: clip to the capsule and paint a left-to-right rect so the progress edge is straight.
-                    if let remaining {
-                        let fillWidthPx = Self.fillWidthPixels(remaining: remaining, rectWidth: rectPx.w)
-                        if fillWidthPx > 0 {
-                            NSGraphicsContext.current?.cgContext.saveGState()
-                            trackPath.addClip()
-                            fillColor.withAlphaComponent(alpha).setFill()
-                            NSBezierPath(
-                                rect: Self.grid.rect(
-                                    x: rectPx.x,
-                                    y: rectPx.y,
-                                    w: fillWidthPx,
-                                    h: rectPx.h)).fill()
-                            NSGraphicsContext.current?.cgContext.restoreGState()
-                        }
-                    }
+                    Self.drawMeter(
+                        rectPx: rectPx,
+                        remaining: remaining,
+                        cornerRadiusPx: cornerRadiusPx,
+                        trackFillColor: drawTrackFill
+                            ? baseFill.withAlphaComponent(trackFillAlpha * alpha)
+                            : nil,
+                        trackStrokeColor: baseFill.withAlphaComponent(trackStrokeAlpha * alpha),
+                        fillColor: fillColor.withAlphaComponent(alpha))
 
                     // Codex face: eye cutouts plus faint eyelids to give the prompt some personality.
                     if addFace {

@@ -595,6 +595,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Usa renderização de alto contraste para manter o ícone e a métrica legíveis em outras telas.";
 "menu_bar_style_critters" = "Bichinhos";
 "menu_bar_style_bars" = "Barras de medição";
+"menu_bar_style_provider_bars" = "Barras por provedor";
+"menu_bar_style_provider_bars_hint" = "Um medidor por provedor da Visão geral, nessa ordem, até 4. Requer Mesclar ícones ativado.";
 "menu_bar_style_icon_percent" = "Ícone e porcentagem";
 "switcher_rows_title" = "Linhas do alternador";
 "switcher_rows_icons" = "Ícones dos provedores";

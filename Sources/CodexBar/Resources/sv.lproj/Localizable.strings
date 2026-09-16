@@ -597,6 +597,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Använder kontrastrik rendering så att ikonen och mätvärdet förblir läsbara på andra skärmar.";
 "menu_bar_style_critters" = "Figurer";
 "menu_bar_style_bars" = "Mätarstaplar";
+"menu_bar_style_provider_bars" = "Staplar per leverantör";
+"menu_bar_style_provider_bars_hint" = "En mätare per leverantör i Översikt, i samma ordning, upp till 4. Kräver att Slå ihop ikoner är på.";
 "menu_bar_style_icon_percent" = "Ikon och procent";
 "switcher_rows_title" = "Växlarrader";
 "switcher_rows_icons" = "Leverantörsikoner";

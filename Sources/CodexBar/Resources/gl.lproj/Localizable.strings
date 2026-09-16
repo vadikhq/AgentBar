@@ -577,6 +577,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Usa unha representación de alto contraste para manter lexibles a icona e a métrica nas outras pantallas.";
 "menu_bar_style_critters" = "Animaliños";
 "menu_bar_style_bars" = "Barras de medición";
+"menu_bar_style_provider_bars" = "Barras por provedor";
+"menu_bar_style_provider_bars_hint" = "Un indicador por provedor da Vista xeral, nesa orde, ata 4. Precisa Fusionar iconas activado.";
 "menu_bar_style_icon_percent" = "Icona e porcentaxe";
 "switcher_rows_title" = "Filas do selector";
 "switcher_rows_icons" = "Iconas de provedores";

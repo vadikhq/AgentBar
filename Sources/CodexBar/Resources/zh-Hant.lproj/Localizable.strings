@@ -597,6 +597,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "使用高對比顯示，讓其他顯示器上的圖示與指標保持清晰可讀。";
 "menu_bar_style_critters" = "小動物";
 "menu_bar_style_bars" = "進度條";
+"menu_bar_style_provider_bars" = "每個服務商一條";
+"menu_bar_style_provider_bars_hint" = "總覽中每個服務商一條，順序相同，最多 4 條。需開啟合併圖示。";
 "menu_bar_style_icon_percent" = "圖示和百分比";
 "switcher_rows_title" = "切換器列";
 "switcher_rows_icons" = "提供者圖示";

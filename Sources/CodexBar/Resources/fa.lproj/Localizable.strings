@@ -604,6 +604,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "از نمایش با کنتراست بالا استفاده می‌کند تا نماد و معیار در نمایشگرهای دیگر خوانا بمانند.";
 "menu_bar_style_critters" = "موجودات";
 "menu_bar_style_bars" = "نوارهای اندازه‌گیری";
+"menu_bar_style_provider_bars" = "نوارها به ازای هر ارائه‌دهنده";
+"menu_bar_style_provider_bars_hint" = "یک نوار برای هر ارائه‌دهندهٔ نمای کلی، به همان ترتیب، تا ۴ مورد. نیازمند فعال بودن ادغام نمادها.";
 "menu_bar_style_icon_percent" = "آیکون و درصد";
 "switcher_rows_title" = "ردیف‌های سوئیچر";
 "switcher_rows_icons" = "آیکون‌های ارائه‌دهنده";

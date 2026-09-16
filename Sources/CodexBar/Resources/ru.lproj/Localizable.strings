@@ -599,6 +599,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Использует высококонтрастную отрисовку, чтобы значок и показатель оставались читаемыми на других дисплеях.";
 "menu_bar_style_critters" = "Декоративные индикаторы";
 "menu_bar_style_bars" = "Полосы-индикаторы";
+"menu_bar_style_provider_bars" = "Полоски по сервисам";
+"menu_bar_style_provider_bars_hint" = "По одной полоске на сервис из Overview, в том же порядке, максимум 4. Нужен включённый режим объединения значков.";
 "menu_bar_style_icon_percent" = "Значок и процент";
 "switcher_rows_title" = "Строки переключателя";
 "switcher_rows_icons" = "Значки провайдеров";

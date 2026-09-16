@@ -604,6 +604,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Simge ve ölçümün diğer ekranlarda okunabilir kalması için yüksek kontrastlı işleme kullanır.";
 "menu_bar_style_critters" = "Canavarlar";
 "menu_bar_style_bars" = "Ölçüm çubukları";
+"menu_bar_style_provider_bars" = "Sağlayıcı başına çubuk";
+"menu_bar_style_provider_bars_hint" = "Genel Bakış’taki her sağlayıcı için bir gösterge, aynı sırayla, en fazla 4. Simgeleri birleştir açık olmalı.";
 "menu_bar_style_icon_percent" = "Simge ve yüzde";
 "switcher_rows_title" = "Değiştirici satırları";
 "switcher_rows_icons" = "Sağlayıcı simgeleri";

@@ -588,6 +588,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "고대비 렌더링을 사용하여 다른 디스플레이에서도 아이콘과 지표를 읽기 쉽게 유지합니다.";
 "menu_bar_style_critters" = "크리터";
 "menu_bar_style_bars" = "미터 막대";
+"menu_bar_style_provider_bars" = "제공업체별 막대";
+"menu_bar_style_provider_bars_hint" = "개요의 제공업체마다 막대 하나, 같은 순서로 최대 4개. 아이콘 병합이 켜져 있어야 합니다.";
 "menu_bar_style_icon_percent" = "아이콘 및 백분율";
 "switcher_rows_title" = "전환기 행";
 "switcher_rows_icons" = "공급자 아이콘";

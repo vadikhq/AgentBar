@@ -598,6 +598,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Gebruikt weergave met hoog contrast zodat het pictogram en de metriek leesbaar blijven op andere beeldschermen.";
 "menu_bar_style_critters" = "Critters";
 "menu_bar_style_bars" = "Meterbalken";
+"menu_bar_style_provider_bars" = "Balken per provider";
+"menu_bar_style_provider_bars_hint" = "Eén meter per Overzicht-provider, in die volgorde, maximaal 4. Symbolen samenvoegen moet aanstaan.";
 "menu_bar_style_icon_percent" = "Pictogram en percentage";
 "switcher_rows_title" = "Switcher-rijen";
 "switcher_rows_icons" = "Providerpictogrammen";

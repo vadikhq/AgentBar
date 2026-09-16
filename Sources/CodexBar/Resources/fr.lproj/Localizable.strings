@@ -598,6 +598,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Utilise un rendu à contraste élevé pour que l’icône et la mesure restent lisibles sur les autres écrans.";
 "menu_bar_style_critters" = "Créatures";
 "menu_bar_style_bars" = "Barres de mesure";
+"menu_bar_style_provider_bars" = "Barres par fournisseur";
+"menu_bar_style_provider_bars_hint" = "Une jauge par fournisseur de la vue d’ensemble, dans cet ordre, jusqu’à 4. Nécessite Fusionner les icônes.";
 "menu_bar_style_icon_percent" = "Icône et pourcentage";
 "switcher_rows_title" = "Lignes du sélecteur";
 "switcher_rows_icons" = "Icônes des fournisseurs";

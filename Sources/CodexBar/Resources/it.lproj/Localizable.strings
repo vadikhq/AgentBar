@@ -606,6 +606,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Usa un rendering ad alto contrasto per mantenere leggibili icona e metrica sugli altri schermi.";
 "menu_bar_style_critters" = "Creature";
 "menu_bar_style_bars" = "Barre di livello";
+"menu_bar_style_provider_bars" = "Barre per provider";
+"menu_bar_style_provider_bars_hint" = "Un indicatore per provider della Panoramica, in quell’ordine, fino a 4. Richiede Unisci icone attivo.";
 "menu_bar_style_icon_percent" = "Icona + percentuale";
 "switcher_rows_title" = "Righe selettore";
 "switcher_rows_icons" = "Icone provider";

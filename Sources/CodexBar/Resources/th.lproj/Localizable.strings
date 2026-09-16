@@ -604,6 +604,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "ใช้การแสดงผลแบบคอนทราสต์สูงเพื่อให้ไอคอนและค่าชี้วัดอ่านได้บนจออื่น";
 "menu_bar_style_critters" = "ตัวการ์ตูน";
 "menu_bar_style_bars" = "แถบวัด";
+"menu_bar_style_provider_bars" = "แถบต่อผู้ให้บริการ";
+"menu_bar_style_provider_bars_hint" = "หนึ่งแถบต่อผู้ให้บริการในภาพรวม เรียงตามลำดับเดียวกัน สูงสุด 4 ต้องเปิดการรวมไอคอน";
 "menu_bar_style_icon_percent" = "ไอคอนและเปอร์เซ็นต์";
 "switcher_rows_title" = "แถวในตัวสลับ";
 "switcher_rows_icons" = "ไอคอนผู้ให้บริการ";

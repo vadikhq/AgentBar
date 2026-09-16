@@ -718,6 +718,14 @@ extension SettingsStore {
         }
     }
 
+    var menuBarShowsProviderBars: Bool {
+        get { self.defaultsState.menuBarShowsProviderBars }
+        set {
+            self.defaultsState.menuBarShowsProviderBars = newValue
+            self.userDefaults.set(newValue, forKey: "menuBarShowsProviderBars")
+        }
+    }
+
     var claudeOAuthKeychainPromptMode: ClaudeOAuthKeychainPromptMode {
         get {
             let raw = self.defaultsState.claudeOAuthKeychainPromptModeRaw

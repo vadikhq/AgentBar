@@ -606,6 +606,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Gunakan rendering kontras tinggi agar ikon dan metrik tetap terbaca di layar lain.";
 "menu_bar_style_critters" = "Critter";
 "menu_bar_style_bars" = "Bilah meter";
+"menu_bar_style_provider_bars" = "Bilah per penyedia";
+"menu_bar_style_provider_bars_hint" = "Satu meter per penyedia Ringkasan, dalam urutan itu, hingga 4. Perlu Gabungkan ikon aktif.";
 "menu_bar_style_icon_percent" = "Ikon & persentase";
 "switcher_rows_title" = "Baris pengalih";
 "switcher_rows_icons" = "Ikon penyedia";

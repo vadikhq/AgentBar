@@ -595,6 +595,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "高コントラスト表示を使用し、ほかのディスプレイでもアイコンと指標を読みやすくします。";
 "menu_bar_style_critters" = "クリッター";
 "menu_bar_style_bars" = "メーターバー";
+"menu_bar_style_provider_bars" = "プロバイダーごとのバー";
+"menu_bar_style_provider_bars_hint" = "概要のプロバイダーごとに1本、同じ順序で最大4本。アイコンの統合をオンにする必要があります。";
 "menu_bar_style_icon_percent" = "アイコンとパーセント";
 "switcher_rows_title" = "切替バーの表示";
 "switcher_rows_icons" = "プロバイダアイコン";

@@ -585,6 +585,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Use high-contrast rendering to keep the icon and metric readable on other displays.";
 "menu_bar_style_critters" = "Critters";
 "menu_bar_style_bars" = "Meter bars";
+"menu_bar_style_provider_bars" = "Bars per provider";
+"menu_bar_style_provider_bars_hint" = "One meter per Overview provider, in Overview order, up to 4. Needs Merge icons on.";
 "menu_bar_style_icon_percent" = "Icon & percent";
 "switcher_rows_title" = "Switcher rows";
 "switcher_rows_icons" = "Provider icons";

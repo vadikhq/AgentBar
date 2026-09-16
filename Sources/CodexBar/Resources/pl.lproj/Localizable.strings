@@ -606,6 +606,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Używa renderowania o wysokim kontraście, aby ikona i wskaźnik pozostały czytelne na innych ekranach.";
 "menu_bar_style_critters" = "Stworki";
 "menu_bar_style_bars" = "Paski miernika";
+"menu_bar_style_provider_bars" = "Paski na dostawcę";
+"menu_bar_style_provider_bars_hint" = "Jeden wskaźnik na dostawcę z przeglądu, w tej kolejności, do 4. Wymaga włączonego łączenia ikon.";
 "menu_bar_style_icon_percent" = "Ikona i procent";
 "switcher_rows_title" = "Wiersze przełącznika";
 "switcher_rows_icons" = "Ikony dostawców";

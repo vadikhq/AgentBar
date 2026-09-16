@@ -582,6 +582,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "Utilitza una representació d'alt contrast perquè la icona i la mètrica siguin llegibles a les altres pantalles.";
 "menu_bar_style_critters" = "Bestioles";
 "menu_bar_style_bars" = "Barres de mesura";
+"menu_bar_style_provider_bars" = "Barres per proveïdor";
+"menu_bar_style_provider_bars_hint" = "Un indicador per proveïdor de la vista general, en aquest ordre, fins a 4. Cal activar la fusió d'icones.";
 "menu_bar_style_icon_percent" = "Icona i percentatge";
 "switcher_rows_title" = "Files del selector";
 "switcher_rows_icons" = "Icones de proveïdor";

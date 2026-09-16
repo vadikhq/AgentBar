@@ -604,6 +604,8 @@
 "menu_bar_inactive_display_contrast_subtitle" = "استخدم عرضًا عالي التباين لإبقاء الأيقونة والمقياس قابلين للقراءة على الشاشات الأخرى.";
 "menu_bar_style_critters" = "الكائنات الصغيرة";
 "menu_bar_style_bars" = "أشرطة القياس";
+"menu_bar_style_provider_bars" = "أشرطة لكل مزوّد";
+"menu_bar_style_provider_bars_hint" = "مقياس واحد لكل مزوّد في النظرة العامة، بترتيب النظرة العامة، حتى 4. يتطلب تفعيل دمج الأيقونات.";
 "menu_bar_style_icon_percent" = "الأيقونة والنسبة المئوية";
 "switcher_rows_title" = "صفوف المحوّل";
 "switcher_rows_icons" = "أيقونات المزودين";
